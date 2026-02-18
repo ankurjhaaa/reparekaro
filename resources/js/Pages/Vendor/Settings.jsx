@@ -1,146 +1,53 @@
-import React, { useState } from 'react';
+import React from 'react';
 import VendorLayout from '../../Layouts/VendorLayout';
-import { Head } from '@inertiajs/react';
+import { User, Lock, Bell, HelpCircle } from 'lucide-react';
 import Button from '../../Components/Forms/Button';
-import Input from '../../Components/Forms/Input';
-import Card from '../../Components/Cards/Card';
 
 export default function Settings() {
-    const [activeTab, setActiveTab] = useState('general');
-    const [colors, setColors] = useState({
-        bg: '#f9fafb',
-        primary: '#2563eb',
-        button: '#2563eb',
-        sidebar: '#ffffff',
-        text: '#1f2937'
-    });
-
-    const handleColorChange = (e) => {
-        setColors({ ...colors, [e.target.name]: e.target.value });
-    };
-
     return (
-        <VendorLayout>
-            <Head title="Vendor Settings" />
+        <VendorLayout title="Settings">
+            <h1 className="text-2xl font-bold text-gray-900 mb-6">Settings</h1>
 
-            <div className="mb-6">
-                <h1 className="text-2xl font-bold text-gray-900">Settings</h1>
-                <p className="text-gray-500">Manage your business profile and preferences</p>
-            </div>
-
-            <div className="mb-6 border-b border-gray-200">
-                <nav className="-mb-px flex space-x-8">
-                    {['General', 'Branding', 'Working Hours', 'Notifications'].map((tab) => (
-                        <button
-                            key={tab}
-                            onClick={() => setActiveTab(tab.toLowerCase().replace(' ', ''))}
-                            className={`whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm ${activeTab === tab.toLowerCase().replace(' ', '')
-                                    ? 'border-[var(--primary)] text-[var(--primary)]'
-                                    : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
-                                }`}
-                        >
-                            {tab}
-                        </button>
-                    ))}
-                </nav>
-            </div>
-
-            <div className="space-y-6">
-                {activeTab === 'general' && (
-                    <Card title="Business Information">
-                        <form className="space-y-4">
-                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                                <Input label="Business Name" placeholder="My Repair Shop" />
-                                <Input label="Contact Email" type="email" placeholder="contact@example.com" />
-                                <Input label="Phone Number" type="tel" placeholder="+1234567890" />
-                                <Input label="Website" placeholder="https://..." />
-                            </div>
-                            <Input label="Service Area (Cities/Zip Codes)" placeholder="New York, Brooklyn, 10001" />
-                            <div className="flex justify-end">
-                                <Button type="submit">Save Changes</Button>
-                            </div>
-                        </form>
-                    </Card>
-                )}
-
-                {activeTab === 'branding' && (
-                    <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-                        <Card title="Logo & Assets">
-                            <div className="space-y-4">
-                                <div className="flex items-center space-x-4">
-                                    <div className="h-20 w-20 rounded-lg bg-gray-100 flex items-center justify-center text-gray-400">
-                                        Logo
-                                    </div>
-                                    <Button variant="outline" size="sm">Upload New Logo</Button>
-                                </div>
-                            </div>
-                        </Card>
-
-                        <Card title="Theme Customization">
-                            <form className="space-y-4">
-                                <div className="grid grid-cols-2 gap-4">
-                                    <div>
-                                        <label className="block text-sm font-medium text-gray-700 mb-1">Primary Color</label>
-                                        <div className="flex items-center gap-2">
-                                            <input type="color" name="primary" value={colors.primary} onChange={handleColorChange} className="h-9 w-9 p-0 border-0 rounded cursor-pointer" />
-                                            <span className="text-sm font-mono text-gray-500">{colors.primary}</span>
-                                        </div>
-                                    </div>
-                                    <div>
-                                        <label className="block text-sm font-medium text-gray-700 mb-1">Button Color</label>
-                                        <div className="flex items-center gap-2">
-                                            <input type="color" name="button" value={colors.button} onChange={handleColorChange} className="h-9 w-9 p-0 border-0 rounded cursor-pointer" />
-                                            <span className="text-sm font-mono text-gray-500">{colors.button}</span>
-                                        </div>
-                                    </div>
-                                    <div>
-                                        <label className="block text-sm font-medium text-gray-700 mb-1">Sidebar Color</label>
-                                        <div className="flex items-center gap-2">
-                                            <input type="color" name="sidebar" value={colors.sidebar} onChange={handleColorChange} className="h-9 w-9 p-0 border-0 rounded cursor-pointer" />
-                                            <span className="text-sm font-mono text-gray-500">{colors.sidebar}</span>
-                                        </div>
-                                    </div>
-                                    <div>
-                                        <label className="block text-sm font-medium text-gray-700 mb-1">Background Color</label>
-                                        <div className="flex items-center gap-2">
-                                            <input type="color" name="bg" value={colors.bg} onChange={handleColorChange} className="h-9 w-9 p-0 border-0 rounded cursor-pointer" />
-                                            <span className="text-sm font-mono text-gray-500">{colors.bg}</span>
-                                        </div>
-                                    </div>
-                                </div>
-
-                                {/* Theme Preview */}
-                                <div className="mt-6 p-4 rounded-lg border border-gray-200" style={{ backgroundColor: colors.bg }}>
-                                    <p className="text-xs text-gray-500 mb-2 uppercase font-semibold">Live Preview</p>
-                                    <div className="flex gap-4">
-                                        <div className="w-16 h-20 rounded shadow-sm" style={{ backgroundColor: colors.sidebar }}></div>
-                                        <div className="flex-1 space-y-2">
-                                            <div className="h-8 rounded bg-white shadow-sm w-full"></div>
-                                            <button
-                                                className="px-4 py-2 rounded text-white text-sm font-medium"
-                                                style={{ backgroundColor: colors.button }}
-                                            >
-                                                Button
-                                            </button>
-                                            <p className="text-sm" style={{ color: colors.primary }}>Primary Text</p>
-                                        </div>
-                                    </div>
-                                </div>
-
-                                <div className="flex justify-end pt-4">
-                                    <Button type="button">Save Theme</Button>
-                                </div>
-                            </form>
-                        </Card>
+            <div className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden divide-y divide-gray-100 max-w-2xl">
+                <div className="p-4 flex items-center justify-between hover:bg-gray-50 cursor-pointer">
+                    <div className="flex items-center gap-4">
+                        <div className="bg-blue-50 p-2 rounded-lg text-blue-600">
+                            <User size={20} />
+                        </div>
+                        <div>
+                            <h3 className="font-bold text-gray-900">Profile Settings</h3>
+                            <p className="text-sm text-gray-500">Update company details</p>
+                        </div>
                     </div>
-                )}
+                    <Button variant="outline" className="text-sm">Edit</Button>
+                </div>
 
-                {/* Other tabs omitted for brevity but structure is there */}
-                {['workinghours', 'notifications'].includes(activeTab) && (
-                    <Card title={activeTab === 'workinghours' ? 'Working Hours' : 'Notification Preferences'}>
-                        <p className="text-gray-500 italic">Settings for {activeTab} go here...</p>
-                    </Card>
-                )}
+                <div className="p-4 flex items-center justify-between hover:bg-gray-50 cursor-pointer">
+                    <div className="flex items-center gap-4">
+                        <div className="bg-yellow-50 p-2 rounded-lg text-yellow-600">
+                            <Bell size={20} />
+                        </div>
+                        <div>
+                            <h3 className="font-bold text-gray-900">Notifications</h3>
+                            <p className="text-sm text-gray-500">Manage alerts</p>
+                        </div>
+                    </div>
+                    <div className="w-10 h-6 bg-green-500 rounded-full p-1 cursor-pointer">
+                        <div className="w-4 h-4 bg-white rounded-full shadow-md transform translate-x-4"></div>
+                    </div>
+                </div>
+
+                <div className="p-4 flex items-center justify-between hover:bg-gray-50 cursor-pointer">
+                    <div className="flex items-center gap-4">
+                        <div className="bg-red-50 p-2 rounded-lg text-red-600">
+                            <Lock size={20} />
+                        </div>
+                        <div>
+                            <h3 className="font-bold text-gray-900">Security</h3>
+                            <p className="text-sm text-gray-500">Change password</p>
+                        </div>
+                    </div>
+                </div>
             </div>
         </VendorLayout>
     );

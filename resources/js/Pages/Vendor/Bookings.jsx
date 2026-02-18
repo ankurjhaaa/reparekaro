@@ -1,85 +1,107 @@
-import React from 'react';
+import React, { useState } from 'react';
 import VendorLayout from '../../Layouts/VendorLayout';
-import { Head } from '@inertiajs/react';
-import DataTable from '../../Components/Tables/DataTable';
+import { Calendar, User, MapPin, Clock, MoreVertical, Search, Filter } from 'lucide-react';
 import Button from '../../Components/Forms/Button';
-import Badge from '../../Components/Badge';
-import Input from '../../Components/Forms/Input';
-import { Search, Filter } from 'lucide-react';
 
 export default function Bookings() {
+    const [activeTab, setActiveTab] = useState('All');
+
+    // Mock Data
     const bookings = [
-        { id: '#BK1024', customer: 'Alice Smith', service: 'AC Repair', status: 'Pending', date: 'Oct 24, 2023', amount: '$50.00' },
-        { id: '#BK1023', customer: 'Bob Jones', service: 'Plumbing', status: 'Completed', date: 'Oct 22, 2023', amount: '$120.00' },
-        { id: '#BK1022', customer: 'Charlie Brown', service: 'Electrical', status: 'In Progress', date: 'Oct 21, 2023', amount: '$85.00' },
-        { id: '#BK1021', customer: 'Diana Prince', service: 'Carpenter', status: 'Cancelled', date: 'Oct 20, 2023', amount: '$0.00' },
-        { id: '#BK1020', customer: 'Evan Wright', service: 'AC Repair', status: 'Completed', date: 'Oct 18, 2023', amount: '$60.00' },
+        { id: 'RK-8821', customer: 'Amit Singh', service: 'AC Repair', status: 'Pending', time: '10:30 AM', address: 'Sector 62, Noida' },
+        { id: 'RK-8822', customer: 'Priya Sharma', service: 'Plumbing', status: 'Assigned', time: '11:00 AM', address: 'Indirapuram, GZB', technician: 'Vikram Singh' },
+        { id: 'RK-8823', customer: 'Rahul Verma', service: 'Electrician', status: 'Completed', time: 'Yesterday', address: 'Sector 18, Noida', technician: 'Amit Kumar' },
     ];
 
-    const columns = [
-        { header: 'Booking ID', accessor: 'id' },
-        { header: 'Customer', accessor: 'customer' },
-        { header: 'Service', accessor: 'service' },
-        { header: 'Date', accessor: 'date' },
-        { header: 'Amount', accessor: 'amount' },
-        {
-            header: 'Status',
-            render: (row) => (
-                <Badge variant={
-                    row.status === 'Completed' ? 'success' :
-                        row.status === 'Pending' ? 'warning' :
-                            row.status === 'Cancelled' ? 'danger' : 'primary'
-                }>
-                    {row.status}
-                </Badge>
-            )
-        },
-    ];
+    const filteredBookings = activeTab === 'All' ? bookings : bookings.filter(b => b.status === activeTab);
 
     return (
-        <VendorLayout>
-            <Head title="Bookings - Vendor Dashboard" />
-
-            <div className="flex flex-col sm:flex-row sm:items-center justify-between mb-6 gap-4">
-                <div>
-                    <h1 className="text-2xl font-bold text-gray-900">Bookings</h1>
-                    <p className="text-gray-500">Manage your service requests</p>
-                </div>
+        <VendorLayout title="Bookings">
+            <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-6">
+                <h1 className="text-2xl font-bold text-gray-900">Bookings</h1>
                 <div className="flex gap-2">
-                    <Button>+ Create Booking</Button>
-                </div>
-            </div>
-
-            <div className="bg-white p-4 rounded-lg shadow-sm border border-gray-200 mb-6">
-                <div className="flex flex-col sm:flex-row gap-4">
-                    <div className="relative flex-1">
-                        <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 w-5 h-5" />
-                        <input
-                            type="text"
-                            placeholder="Search bookings..."
-                            className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[var(--primary)]"
-                        />
-                    </div>
                     <Button variant="outline" className="flex items-center gap-2">
-                        <Filter className="w-4 h-4" /> Filter
+                        <Filter size={16} /> Filter
+                    </Button>
+                    <Button className="bg-(--primary) text-white flex items-center gap-2">
+                        <Calendar size={16} /> New Booking
                     </Button>
                 </div>
             </div>
 
-            <div className="bg-white rounded-lg shadow-sm border border-gray-200">
-                <DataTable
-                    columns={columns}
-                    data={bookings}
-                    actions={(row) => <Button size="sm" variant="ghost">Details</Button>}
-                />
-                {/* Pagination Placeholder */}
-                <div className="px-6 py-4 border-t border-gray-200 flex items-center justify-between">
-                    <span className="text-sm text-gray-500">Showing 1 to 5 of 50 results</span>
-                    <div className="flex gap-2">
-                        <Button size="sm" variant="outline">Previous</Button>
-                        <Button size="sm" variant="outline">Next</Button>
+            {/* Tabs */}
+            <div className="flex overflow-x-auto gap-2 mb-6 pb-2 no-scrollbar">
+                {['All', 'Pending', 'Assigned', 'Completed', 'Cancelled'].map((tab) => (
+                    <button
+                        key={tab}
+                        onClick={() => setActiveTab(tab)}
+                        className={`px-4 py-2 rounded-full text-sm font-bold whitespace-nowrap transition-colors ${activeTab === tab
+                                ? 'bg-gray-900 text-white'
+                                : 'bg-white text-gray-500 hover:bg-gray-100 border border-gray-200'
+                            }`}
+                    >
+                        {tab}
+                    </button>
+                ))}
+            </div>
+
+            {/* Booking List */}
+            <div className="space-y-4">
+                {filteredBookings.map((booking) => (
+                    <div key={booking.id} className="bg-white p-4 rounded-xl shadow-sm border border-gray-100 hover:shadow-md transition-shadow">
+                        <div className="flex justify-between items-start mb-2">
+                            <div className="flex items-center gap-3">
+                                <div className={`w-10 h-10 rounded-lg flex items-center justify-center font-bold text-lg ${booking.status === 'Pending' ? 'bg-yellow-50 text-yellow-600' :
+                                        booking.status === 'Assigned' ? 'bg-blue-50 text-blue-600' :
+                                            'bg-green-50 text-green-600'
+                                    }`}>
+                                    {booking.service.charAt(0)}
+                                </div>
+                                <div>
+                                    <h3 className="font-bold text-gray-900">{booking.service}</h3>
+                                    <p className="text-xs text-gray-500 font-mono">{booking.id}</p>
+                                </div>
+                            </div>
+                            <span className={`px-2 py-1 rounded text-[10px] font-bold uppercase tracking-wider ${booking.status === 'Pending' ? 'bg-yellow-100 text-yellow-700' :
+                                    booking.status === 'Assigned' ? 'bg-blue-100 text-blue-700' :
+                                        'bg-green-100 text-green-700'
+                                }`}>
+                                {booking.status}
+                            </span>
+                        </div>
+
+                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 mt-3 text-sm text-gray-600">
+                            <div className="flex items-center gap-2">
+                                <User size={14} className="text-gray-400" />
+                                <span className="font-medium text-gray-900">{booking.customer}</span>
+                            </div>
+                            <div className="flex items-center gap-2">
+                                <Clock size={14} className="text-gray-400" />
+                                <span>{booking.time}</span>
+                            </div>
+                            <div className="flex items-center gap-2 sm:col-span-2">
+                                <MapPin size={14} className="text-gray-400" />
+                                <span className="truncate">{booking.address}</span>
+                            </div>
+                        </div>
+
+                        {booking.status === 'Assigned' && (
+                            <div className="mt-3 pt-3 border-t border-gray-50 flex items-center justify-between">
+                                <div className="text-xs text-gray-500">
+                                    Assigned to <span className="font-bold text-gray-900">{booking.technician}</span>
+                                </div>
+                                <button className="text-blue-600 text-xs font-bold hover:underline">Change</button>
+                            </div>
+                        )}
+
+                        {booking.status === 'Pending' && (
+                            <div className="mt-4 flex gap-2">
+                                <Button className="flex-1 bg-(--primary) text-white text-sm py-2">Assign Technician</Button>
+                                <Button variant="outline" className="flex-1 border-gray-200 text-gray-600 text-sm py-2">Reject</Button>
+                            </div>
+                        )}
                     </div>
-                </div>
+                ))}
             </div>
         </VendorLayout>
     );

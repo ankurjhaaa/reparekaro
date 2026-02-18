@@ -139,6 +139,37 @@ Route::prefix('technician')->group(function () {
     })->name('technician.skills');
 });
 
+// Vendor Routes
+Route::middleware([
+    'auth:sanctum',
+    config('jetstream.auth_session'),
+    'verified',
+])->prefix('vendor')->group(function () {
+    Route::get('/dashboard', function () {
+        return Inertia::render('Vendor/Dashboard');
+    })->name('vendor.dashboard');
+
+    Route::get('/technicians', function () {
+        return Inertia::render('Vendor/Technicians');
+    })->name('vendor.technicians');
+
+    Route::get('/bookings', function () {
+        return Inertia::render('Vendor/Bookings');
+    })->name('vendor.bookings');
+
+    Route::get('/services', function () {
+        return Inertia::render('Vendor/Services');
+    })->name('vendor.services');
+
+    Route::get('/reports', function () {
+        return Inertia::render('Vendor/Reports');
+    })->name('vendor.reports');
+
+    Route::get('/settings', function () {
+        return Inertia::render('Vendor/Settings');
+    })->name('vendor.settings');
+});
+
 Route::get('/login', function () {
     return Inertia::render('Auth/Login');
 })->name('login');

@@ -1,95 +1,88 @@
 import React from 'react';
 import VendorLayout from '../../Layouts/VendorLayout';
-import { Head } from '@inertiajs/react';
-import StatCard from '../../Components/Stats/StatCard';
-import ChartPlaceholder from '../../Components/Charts/ChartPlaceholder';
-import DataTable from '../../Components/Tables/DataTable';
-import Button from '../../Components/Forms/Button';
-import Badge from '../../Components/Badge';
-import { Users, DollarSign, Calendar, TrendingUp } from 'lucide-react';
+import { DollarSign, users, Briefcase, TrendingUp, UserCheck, Calendar } from 'lucide-react';
+import { Link } from '@inertiajs/react';
 
 export default function Dashboard() {
-    const bookings = [
-        { id: '#BK001', customer: 'Alice Smith', service: 'AC Repair', status: 'Pending', amount: '$50', date: '2023-10-01' },
-        { id: '#BK002', customer: 'Bob Jones', service: 'Plumbing', status: 'Completed', amount: '$80', date: '2023-09-28' },
-        { id: '#BK003', customer: 'Charlie Brown', service: 'Electrical', status: 'In Progress', amount: '$45', date: '2023-10-02' },
+    // Mock Data
+    const stats = [
+        { label: 'Total Revenue', value: '₹45,200', change: '+12%', icon: DollarSign, color: 'bg-green-100 text-green-600' },
+        { label: 'Active Jobs', value: '24', change: '+4', icon: Briefcase, color: 'bg-blue-100 text-blue-600' },
+        { label: 'Technicians', value: '12', change: '2 Active', icon: UserCheck, color: 'bg-purple-100 text-purple-600' },
+        { label: 'Weekly Growth', value: '18%', change: '+2.4%', icon: TrendingUp, color: 'bg-orange-100 text-orange-600' },
     ];
 
-    const columns = [
-        { header: 'Booking ID', accessor: 'id' },
-        { header: 'Customer', accessor: 'customer' },
-        { header: 'Service', accessor: 'service' },
-        {
-            header: 'Status',
-            render: (row) => (
-                <Badge variant={
-                    row.status === 'Completed' ? 'success' :
-                        row.status === 'Pending' ? 'warning' : 'primary'
-                }>
-                    {row.status}
-                </Badge>
-            )
-        },
-        { header: 'Amount', accessor: 'amount' },
-        { header: 'Date', accessor: 'date' },
+    const bookings = [
+        { id: 'RK-8821', customer: 'Amit Singh', service: 'AC Repair', status: 'Pending', time: '10:30 AM' },
+        { id: 'RK-8822', customer: 'Priya Sharma', service: 'Plumbing', status: 'Assigned', time: '11:00 AM' },
+        { id: 'RK-8823', customer: 'Rahul Verma', service: 'Electrician', status: 'Completed', time: 'Yesterday' },
     ];
 
     return (
-        <VendorLayout>
-            <Head title="Vendor Dashboard" />
-
-            <div className="mb-6 flex justify-between items-center">
-                <div>
-                    <h1 className="text-2xl font-bold text-gray-900">Dashboard</h1>
-                    <p className="text-gray-500">Welcome back, Vendor Name</p>
-                </div>
-                <div className="flex gap-2">
-                    <Button variant="outline">Download Report</Button>
-                    <Button>+ New Booking</Button>
-                </div>
-            </div>
-
+        <VendorLayout title="Dashboard">
             {/* Stats Grid */}
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-                <StatCard title="Total Revenue" value="$12,500" icon={DollarSign} trend="+12.5%" trendUp={true} />
-                <StatCard title="Total Bookings" value="156" icon={Calendar} trend="+5.2%" trendUp={true} />
-                <StatCard title="Active Technicians" value="8" icon={Users} />
-                <StatCard title="Today's Bookings" value="12" icon={TrendingUp} trend="+2" trendUp={true} />
-            </div>
-
-            <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 mb-8">
-                {/* Main Chart Area */}
-                <div className="lg:col-span-2">
-                    <div className="bg-white p-6 rounded-lg shadow-sm border border-gray-200">
-                        <h3 className="text-lg font-medium text-gray-900 mb-4">Revenue Overview</h3>
-                        <ChartPlaceholder type="area" title="Revenue Chart" />
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
+                {stats.map((stat, index) => (
+                    <div key={index} className="bg-white p-6 rounded-xl shadow-sm border border-gray-100 hover:shadow-md transition-shadow">
+                        <div className="flex justify-between items-start">
+                            <div>
+                                <p className="text-sm font-medium text-gray-500 mb-1">{stat.label}</p>
+                                <h3 className="text-2xl font-bold text-gray-900">{stat.value}</h3>
+                            </div>
+                            <div className={`p-3 rounded-lg ${stat.color}`}>
+                                <stat.icon size={20} />
+                            </div>
+                        </div>
+                        <div className="mt-4 flex items-center text-sm font-medium text-green-600">
+                            <TrendingUp size={16} className="mr-1" />
+                            <span>{stat.change}</span>
+                            <span className="text-gray-400 font-normal ml-1">vs last month</span>
+                        </div>
                     </div>
-                </div>
-
-                {/* Recent Activity / Side Panel */}
-                <div className="bg-white p-6 rounded-lg shadow-sm border border-gray-200">
-                    <h3 className="text-lg font-medium text-gray-900 mb-4">Recent Activity</h3>
-                    <ul className="space-y-4">
-                        {[1, 2, 3, 4, 5].map((i) => (
-                            <li key={i} className="flex gap-3">
-                                <div className="w-2 h-2 mt-2 rounded-full bg-[var(--primary)] flex-shrink-0"></div>
-                                <div>
-                                    <p className="text-sm text-gray-800">New booking received from <span className="font-semibold">John Doe</span></p>
-                                    <p className="text-xs text-gray-400">2 mins ago</p>
-                                </div>
-                            </li>
-                        ))}
-                    </ul>
-                </div>
+                ))}
             </div>
 
-            {/* Recent Bookings Table */}
-            <div className="bg-white p-6 rounded-lg shadow-sm border border-gray-200">
-                <div className="flex justify-between items-center mb-4">
-                    <h3 className="text-lg font-medium text-gray-900">Recent Bookings</h3>
-                    <Button variant="ghost" size="sm">View All</Button>
+            {/* Recent Activity / Bookings Table */}
+            <div className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
+                <div className="p-6 border-b border-gray-100 flex justify-between items-center">
+                    <h2 className="text-lg font-bold text-gray-900">Recent Bookings</h2>
+                    <Link href="/vendor/bookings" className="text-blue-600 text-sm font-bold hover:underline">View All</Link>
                 </div>
-                <DataTable columns={columns} data={bookings} actions={() => <Button size="sm" variant="ghost">View</Button>} />
+                <div className="overflow-x-auto">
+                    <table className="w-full text-sm text-left">
+                        <thead className="text-xs text-gray-500 uppercase bg-gray-50">
+                            <tr>
+                                <th className="px-6 py-3">Booking ID</th>
+                                <th className="px-6 py-3">Customer</th>
+                                <th className="px-6 py-3">Service</th>
+                                <th className="px-6 py-3">Status</th>
+                                <th className="px-6 py-3">Time</th>
+                                <th className="px-6 py-3">Action</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {bookings.map((booking, i) => (
+                                <tr key={i} className="border-b border-gray-50 hover:bg-gray-50 transition-colors">
+                                    <td className="px-6 py-4 font-medium text-gray-900">{booking.id}</td>
+                                    <td className="px-6 py-4">{booking.customer}</td>
+                                    <td className="px-6 py-4">{booking.service}</td>
+                                    <td className="px-6 py-4">
+                                        <span className={`px-2 py-1 rounded-full text-xs font-bold uppercase ${booking.status === 'Pending' ? 'bg-yellow-100 text-yellow-700' :
+                                                booking.status === 'Assigned' ? 'bg-blue-100 text-blue-700' :
+                                                    'bg-green-100 text-green-700'
+                                            }`}>
+                                            {booking.status}
+                                        </span>
+                                    </td>
+                                    <td className="px-6 py-4 text-gray-500">{booking.time}</td>
+                                    <td className="px-6 py-4">
+                                        <button className="text-blue-600 font-bold hover:text-blue-800">Manage</button>
+                                    </td>
+                                </tr>
+                            ))}
+                        </tbody>
+                    </table>
+                </div>
             </div>
         </VendorLayout>
     );

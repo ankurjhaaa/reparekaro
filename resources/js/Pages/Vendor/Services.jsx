@@ -1,56 +1,64 @@
-import React from 'react';
+import React, { useState } from 'react';
 import VendorLayout from '../../Layouts/VendorLayout';
-import { Head } from '@inertiajs/react';
-import Card from '../../Components/Cards/Card';
+import { Plus, Edit2, Trash2 } from 'lucide-react';
 import Button from '../../Components/Forms/Button';
-import Badge from '../../Components/Badge';
-import { PenTool, Trash2, Plus, Edit } from 'lucide-react';
 
 export default function Services() {
-    const services = [
-        { id: 1, name: 'AC Repair', price: '$50', duration: '1 hour', status: 'Active' },
-        { id: 2, name: 'AC Installation', price: '$80', duration: '2 hours', status: 'Active' },
-        { id: 3, name: 'Gas Refill', price: '$40', duration: '30 mins', status: 'Inactive' },
-    ];
+    const [services, setServices] = useState([
+        { id: 1, name: 'AC Repair', price: '₹499', category: 'AC Repair', duration: '45 mins' },
+        { id: 2, name: 'Gas Refill', price: '₹2499', category: 'AC Repair', duration: '60 mins' },
+        { id: 3, name: 'Installation', price: '₹999', category: 'AC Repair', duration: '90 mins' },
+        { id: 4, name: 'General Service', price: '₹399', category: 'Plumbing', duration: '30 mins' },
+    ]);
 
     return (
-        <VendorLayout>
-            <Head title="My Services - Vendor Dashboard" />
-
+        <VendorLayout title="Services">
             <div className="flex justify-between items-center mb-6">
-                <div>
-                    <h1 className="text-2xl font-bold text-gray-900">My Services</h1>
-                    <p className="text-gray-500">Manage the services you offer</p>
-                </div>
-                <Button className="flex items-center gap-2">
-                    <Plus size={16} /> Add New Service
+                <h1 className="text-2xl font-bold text-gray-900">Services</h1>
+                <Button className="flex items-center gap-2 bg-(--primary) text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition">
+                    <Plus size={18} /> Add Service
                 </Button>
             </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                {services.map((service) => (
-                    <Card key={service.id} className="relative group">
-                        <div className="absolute top-4 right-4 flex gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
-                            <button className="p-1.5 text-blue-600 hover:bg-blue-50 rounded"><Edit size={16} /></button>
-                            <button className="p-1.5 text-red-600 hover:bg-red-50 rounded"><Trash2 size={16} /></button>
-                        </div>
-
-                        <div className="flex items-center gap-4 mb-4">
-                            <div className="h-12 w-12 rounded-lg bg-blue-100 flex items-center justify-center text-blue-600">
-                                <PenTool size={24} />
-                            </div>
-                            <div>
-                                <h3 className="font-bold text-lg text-gray-900">{service.name}</h3>
-                                <Badge variant={service.status === 'Active' ? 'success' : 'gray'}>{service.status}</Badge>
-                            </div>
-                        </div>
-
-                        <div className="flex justify-between items-center text-sm text-gray-500 border-t pt-4">
-                            <span>Price: <span className="font-semibold text-gray-900">{service.price}</span></span>
-                            <span>Duration: <span className="font-semibold text-gray-900">{service.duration}</span></span>
-                        </div>
-                    </Card>
-                ))}
+            <div className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
+                <table className="w-full text-sm text-left">
+                    <thead className="bg-gray-50 text-gray-500 uppercase font-semibold text-xs border-b border-gray-100">
+                        <tr>
+                            <th className="px-6 py-4">Service Name</th>
+                            <th className="px-6 py-4">Category</th>
+                            <th className="px-6 py-4">Price</th>
+                            <th className="px-6 py-4 text-right">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {services.map((service) => (
+                            <tr key={service.id} className="border-b border-gray-50 hover:bg-gray-50 transition-colors">
+                                <td className="px-6 py-4 font-bold text-gray-900">
+                                    {service.name}
+                                    <div className="text-xs font-normal text-gray-400 mt-0.5">{service.duration}</div>
+                                </td>
+                                <td className="px-6 py-4">
+                                    <span className="px-2 py-1 bg-gray-100 text-gray-600 rounded text-xs font-bold uppercase">
+                                        {service.category}
+                                    </span>
+                                </td>
+                                <td className="px-6 py-4 font-bold text-green-600">
+                                    {service.price}
+                                </td>
+                                <td className="px-6 py-4 text-right">
+                                    <div className="flex justify-end gap-2">
+                                        <button className="p-2 bg-blue-50 text-blue-600 rounded-lg hover:bg-blue-100 transition-colors">
+                                            <Edit2 size={16} />
+                                        </button>
+                                        <button className="p-2 bg-red-50 text-red-600 rounded-lg hover:bg-red-100 transition-colors">
+                                            <Trash2 size={16} />
+                                        </button>
+                                    </div>
+                                </td>
+                            </tr>
+                        ))}
+                    </tbody>
+                </table>
             </div>
         </VendorLayout>
     );
