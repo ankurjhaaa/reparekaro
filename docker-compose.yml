@@ -1,0 +1,54 @@
+version: '3.8'
+
+services:
+
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: raperekaro_app
+    restart: unless-stopped
+    working_dir: /var/www
+    volumes:
+      - .:/var/www
+    depends_on:
+      - mysql
+    networks:
+      - raperekaro
+
+  nginx:
+    image: nginx:alpine
+    container_name: raperekaro_nginx
+    restart: unless-stopped
+    ports:
+      - "8080:80"
+    volumes:
+      - .:/var/www
+      - ./nginx:/etc/nginx/conf.d
+    depends_on:
+      - app
+    networks:
+      - raperekaro
+
+  mysql:
+    image: mysql:8.0
+    container_name: raperekaro_mysql
+    restart: unless-stopped
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: raperekaro_db
+      MYSQL_USER: raperekaro_user
+      MYSQL_PASSWORD: secret
+    ports:
+      - "3307:3306"
+    volumes:
+      - raperekaro_dbdata:/var/lib/mysql
+    networks:
+      - raperekaro
+
+networks:
+  raperekaro:
+
+
+volumes:
+  raperekaro_dbdata:
