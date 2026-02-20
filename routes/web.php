@@ -1,174 +1,89 @@
 <?php
 
+use App\Http\Controllers\PublicController;
+use App\Http\Controllers\TechnicianController;
+use App\Http\Controllers\VendorController;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 
-Route::get('/', function () {
-    return Inertia::render('public/Home');
-})->name('home');
+Route::controller(PublicController::class)->group(function(){
+    Route::get('/', 'home')->name('home');
+    Route::get('/book-now','bookNow')->name('book-now');
+    Route::get('/services','services')->name('services');
+    Route::get('/profile','profile')->name('profile');
+    Route::get('/about','about')->name('about');
+    Route::get('/contact','contact')->name('contact');
+    Route::get('/help','help')->name('help');
+    Route::get('/my-bookings','myBookings')->name('my-bookings');
+    Route::get('/booking/{id}','bookingDetails')->name('booking.details');
+    Route::get('/saved-services','savedServices')->name('saved-services');
+    Route::get('/notifications','notifications')->name('notifications');
+    Route::get('/settings','settings')->name('settings');
+    Route::get('/chat/{id}','chat')->name('chat');
+    Route::get('/edit-profile','editProfile')->name('edit-profile');
+    Route::get('/change-password','changePassword')->name('change-password');
+    Route::get('/terms','terms')->name('terms');
+});
 
-Route::get('/book-now', function () {
-    return Inertia::render('public/BookNow');
-})->name('book-now');
+Route::controller(TechnicianController::class)->prefix('technician')->group(function(){
+    Route::get('/dashboard','dashboard')->name('technician.dashboard');
+    Route::get('/jobs','jobs')->name('technician.jobs');
+    Route::get('/job/{id}','jobDetails')->name('technician.job.details');
+    Route::get('/wallet','wallet')->name('technician.wallet');
+    Route::get('/profile','profile')->name('technician.profile');
+    Route::get('/notifications','notifications')->name('technician.notifications');
+    Route::get('/support','support')->name('technician.support');
+    Route::get('/settings','settings')->name('technician.settings');
+    Route::get('/edit-profile','editProfile')->name('technician.edit-profile');
+    Route::get('/change-password','changePassword')->name('technician.change-password');
+    Route::get('/bank-details','bankDetails')->name('technician.bank-details');
+    Route::get('/terms','terms')->name('technician.terms');
+    Route::get('/chat/{id}','chat')->name('technician.chat');
+    Route::get('/service-area','serviceArea')->name('technician.service-area');
+    Route::get('/documents','documents')->name('technician.documents');
+    Route::get('/reviews','reviews')->name('technician.reviews');
+    Route::get('/skills','skills')->name('technician.skills');
+});
 
-Route::get('/services', function () {
-    return Inertia::render('public/Services');
-})->name('services');
-
-Route::get('/profile', function () {
-    return Inertia::render('public/Profile');
-})->name('profile');
-
-Route::get('/about', function () {
-    return Inertia::render('public/About');
-})->name('about');
-
-Route::get('/contact', function () {
-    return Inertia::render('public/Contact');
-})->name('contact');
-
-Route::get('/help', function () {
-    return Inertia::render('public/Help');
-})->name('help');
-
-Route::get('/my-bookings', function () {
-    return Inertia::render('public/MyBookings');
-})->name('my-bookings');
-
-Route::get('/booking/{id}', function ($id) {
-    return Inertia::render('public/BookingDetails', ['id' => $id]);
-})->name('booking.details');
-
-Route::get('/saved-services', function () {
-    return Inertia::render('public/SavedServices');
-})->name('saved-services');
-
-Route::get('/notifications', function () {
-    return Inertia::render('public/Notifications');
-})->name('notifications');
-
-Route::get('/settings', function () {
-    return Inertia::render('public/Settings');
-})->name('settings');
-
-Route::get('/chat/{id}', function ($id) {
-    return Inertia::render('public/Chat', ['id' => $id]);
-})->name('chat');
-
-Route::get('/edit-profile', function () {
-    return Inertia::render('public/EditProfile');
-})->name('edit-profile');
-
-Route::get('/change-password', function () {
-    return Inertia::render('public/ChangePassword');
-})->name('change-password');
-
-Route::get('/terms', function () {
-    return Inertia::render('public/Terms');
-})->name('terms');
-
-
-// Technician Routes
-Route::prefix('technician')->group(function () {
-    Route::get('/dashboard', function () {
-        return Inertia::render('Technician/Home');
-    })->name('technician.dashboard');
-
-    Route::get('/jobs', function () {
-        return Inertia::render('Technician/Jobs');
-    })->name('technician.jobs');
-
-    Route::get('/job/{id}', function ($id) {
-        return Inertia::render('Technician/JobDetails', ['id' => $id]);
-    })->name('technician.job.details');
-
-    Route::get('/wallet', function () {
-        return Inertia::render('Technician/Wallet');
-    })->name('technician.wallet');
-
-    Route::get('/profile', function () {
-        return Inertia::render('Technician/Profile');
-    })->name('technician.profile');
-
-    Route::get('/notifications', function () {
-        return Inertia::render('Technician/Notifications');
-    })->name('technician.notifications');
-
-    Route::get('/support', function () {
-        return Inertia::render('Technician/Support');
-    })->name('technician.support');
-
-    Route::get('/settings', function () {
-        return Inertia::render('Technician/Settings');
-    })->name('technician.settings');
-
-    Route::get('/edit-profile', function () {
-        return Inertia::render('Technician/EditProfile');
-    })->name('technician.edit-profile');
-
-    Route::get('/change-password', function () {
-        return Inertia::render('Technician/ChangePassword');
-    })->name('technician.change-password');
-
-    Route::get('/bank-details', function () {
-        return Inertia::render('Technician/BankDetails');
-    })->name('technician.bank-details');
-
-    Route::get('/terms', function () {
-        return Inertia::render('Technician/Terms');
-    })->name('technician.terms');
-
-    Route::get('/chat/{id}', function ($id) {
-        return Inertia::render('Technician/Chat', ['id' => $id]);
-    })->name('technician.chat');
-
-    Route::get('/service-area', function () {
-        return Inertia::render('Technician/ServiceArea');
-    })->name('technician.service-area');
-
-    Route::get('/documents', function () {
-        return Inertia::render('Technician/Documents');
-    })->name('technician.documents');
-
-    Route::get('/reviews', function () {
-        return Inertia::render('Technician/Reviews');
-    })->name('technician.reviews');
-
-    Route::get('/skills', function () {
-        return Inertia::render('Technician/Skills');
-    })->name('technician.skills');
+Route::controller(VendorController::class)->prefix('vendor')->group(function(){
+    Route::get('/dashboard','dashboard')->name('vendor.dashboard');
+    Route::get('/technicians','technicians')->name('vendor.technicians');
+    Route::get('/bookings','bookings')->name('vendor.bookings');
+    Route::get('/services','services')->name('vendor.services');
+    Route::get('/reports','reports')->name('vendor.reports');
+    Route::get('/settings','settings')->name('vendor.settings');
 });
 
 // Vendor Routes
-Route::middleware([
-    'auth:sanctum',
-    config('jetstream.auth_session'),
-    'verified',
-])->prefix('vendor')->group(function () {
-    Route::get('/dashboard', function () {
-        return Inertia::render('Vendor/Dashboard');
-    })->name('vendor.dashboard');
+// Route::middleware([
+//     'auth:sanctum',
+//     config('jetstream.auth_session'),
+//     'verified',
+// ])->prefix('vendor')->group(function () {
+//     Route::get('/dashboard', function () {
+//         return Inertia::render('Vendor/Dashboard');
+//     })->name('vendor.dashboard');
 
-    Route::get('/technicians', function () {
-        return Inertia::render('Vendor/Technicians');
-    })->name('vendor.technicians');
+//     Route::get('/technicians', function () {
+//         return Inertia::render('Vendor/Technicians');
+//     })->name('vendor.technicians');
 
-    Route::get('/bookings', function () {
-        return Inertia::render('Vendor/Bookings');
-    })->name('vendor.bookings');
+//     Route::get('/bookings', function () {
+//         return Inertia::render('Vendor/Bookings');
+//     })->name('vendor.bookings');
 
-    Route::get('/services', function () {
-        return Inertia::render('Vendor/Services');
-    })->name('vendor.services');
+//     Route::get('/services', function () {
+//         return Inertia::render('Vendor/Services');
+//     })->name('vendor.services');
 
-    Route::get('/reports', function () {
-        return Inertia::render('Vendor/Reports');
-    })->name('vendor.reports');
+//     Route::get('/reports', function () {
+//         return Inertia::render('Vendor/Reports');
+//     })->name('vendor.reports');
 
-    Route::get('/settings', function () {
-        return Inertia::render('Vendor/Settings');
-    })->name('vendor.settings');
-});
+//     Route::get('/settings', function () {
+//         return Inertia::render('Vendor/Settings');
+//     })->name('vendor.settings');
+// });
 
 Route::get('/login', function () {
     return Inertia::render('Auth/Login');
