@@ -1,7 +1,7 @@
 import React from 'react';
 import PublicLayout from '../../Layouts/PublicLayout';
 import { Head, Link } from '@inertiajs/react';
-import { User, Settings, LogOut, HelpCircle, Bell, ChevronRight, Bookmark, Calendar, Shield } from 'lucide-react';
+import { User, Settings, LogOut, HelpCircle, Bell, ChevronRight, Bookmark, Calendar, Shield, MapPin } from 'lucide-react';
 
 import { usePage } from '@inertiajs/react';
 
@@ -10,7 +10,7 @@ export default function Profile() {
     const user = auth?.user;
     const menuItems = [
         { name: 'My Bookings', icon: Calendar, href: '/my-bookings', desc: 'View past and upcoming jobs' },
-        { name: 'Saved Services', icon: Bookmark, href: '/saved-services', desc: 'Your favorite services' },
+        { name: 'My Addresses', icon: MapPin, href: '/addresses', desc: 'Manage your saved locations' },
         { name: 'Notifications', icon: Bell, href: '/notifications', desc: 'Updates and offers' },
         { name: 'Settings', icon: Settings, href: '/settings', desc: 'App preferences' },
         { name: 'Help & Support', icon: HelpCircle, href: '/help', desc: 'FAQs and customer care' },

@@ -20,7 +20,12 @@ class PublicController extends Controller
     {
         // Give frontend 'Services' grouped with their corresponding 'ServiceRates'
         $categories = Service::with('rates')->get();
-        return Inertia::render('Public/BookNow', ['categories' => $categories]);
+        $addresses = auth()->check() ? auth()->user()->addresses : [];
+
+        return Inertia::render('Public/BookNow', [
+            'categories' => $categories,
+            'addresses' => $addresses
+        ]);
     }
 
     public function storeBooking(Request $request)
@@ -36,6 +41,25 @@ class PublicController extends Controller
             'landmark' => 'nullable|string|max:255',
             'notes' => 'nullable|string',
         ]);
+
+        if (auth()->check()) {
+            $existingAddress = auth()->user()->addresses()
+                ->where('address', $request->address)
+                ->where('city', $request->city)
+                ->first();
+
+            if (!$existingAddress) {
+                auth()->user()->addresses()->create([
+                    'name' => $request->name,
+                    'mobile' => $request->mobile,
+                    'address' => $request->address,
+                    'city' => $request->city,
+                    'landmark' => $request->landmark,
+                    'address_type' => 'other',
+                    'is_default' => false,
+                ]);
+            }
+        }
 
         $serviceIds = collect($request->selectedServices)->pluck('id')->toArray();
         $totalAmount = collect($request->selectedServices)->sum('price');
@@ -94,11 +118,13 @@ class PublicController extends Controller
     }
     public function myBookings()
     {
-        return Inertia::render('Public/MyBookings');
+        $bookings = Booking::where('user_id', auth()->id())->latest()->get();
+        return Inertia::render('Public/MyBookings', ['bookings' => $bookings]);
     }
     public function bookingDetails($id)
     {
-        return Inertia::render('Public/BookingDetails', ['id' => $id]);
+        $booking = Booking::with(['vendor'])->where('user_id', auth()->id())->where('booking_id', $id)->firstOrFail();
+        return Inertia::render('Public/BookingDetails', ['booking' => $booking]);
     }
     public function savedServices()
     {
@@ -120,6 +146,24 @@ class PublicController extends Controller
     {
         return Inertia::render('Public/EditProfile');
     }
+
+    public function updateProfile(Request $request)
+    {
+        $request->validate([
+            'name' => 'required|string|max:255',
+            'email' => 'required|email|max:255|unique:users,email,' . auth()->id(),
+            'phone' => 'nullable|string|max:20',
+        ]);
+
+        $user = auth()->user();
+        $user->name = $request->name;
+        $user->email = $request->email;
+        $user->phone = $request->phone;
+        $user->save();
+
+        return redirect()->back()->with('success', 'Profile updated successfully!');
+    }
+
     public function changePassword()
     {
         return Inertia::render('Public/ChangePassword');
@@ -127,5 +171,68 @@ class PublicController extends Controller
     public function terms()
     {
         return Inertia::render('Public/Terms');
+    }
+
+    // --- Address CRUD ---
+    public function addresses()
+    {
+        $addresses = auth()->user()->addresses()->latest()->get();
+        return Inertia::render('Public/Addresses', ['addresses' => $addresses]);
+    }
+
+    public function storeAddress(Request $request)
+    {
+        $request->validate([
+            'name' => 'required|string|max:255',
+            'mobile' => 'required|string|max:15',
+            'address' => 'required|string',
+            'city' => 'required|string|max:100',
+            'state' => 'nullable|string|max:100',
+            'pincode' => 'nullable|string|max:6',
+            'landmark' => 'nullable|string|max:255',
+            'address_type' => 'required|in:home,office,other',
+            'is_default' => 'boolean'
+        ]);
+
+        if ($request->is_default) {
+            auth()->user()->addresses()->update(['is_default' => false]);
+        }
+
+        auth()->user()->addresses()->create($request->all());
+
+        return redirect()->back()->with('success', 'Address added successfully.');
+    }
+
+    public function updateAddress(Request $request, $id)
+    {
+        $request->validate([
+            'name' => 'required|string|max:255',
+            'mobile' => 'required|string|max:15',
+            'address' => 'required|string',
+            'city' => 'required|string|max:100',
+            'state' => 'nullable|string|max:100',
+            'pincode' => 'nullable|string|max:6',
+            'landmark' => 'nullable|string|max:255',
+            'address_type' => 'required|in:home,office,other',
+            'is_default' => 'boolean'
+        ]);
+
+        $address = auth()->user()->addresses()->findOrFail($id);
+
+        if ($request->is_default) {
+            auth()->user()->addresses()->update(['is_default' => false]);
+        }
+
+        $address->update($request->all());
+
+        return redirect()->back()->with('success', 'Address updated successfully.');
+    }
+
+    public function deleteAddress($id)
+    {
+        $address = auth()->user()->addresses()->findOrFail($id);
+        $address->delete();
+
+        return redirect()->back()->with('success', 'Address removed.');
     }
 }

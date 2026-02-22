@@ -1,35 +1,45 @@
-import React, { useState } from 'react';
+import React, { useEffect } from 'react';
 import PublicLayout from '../../Layouts/PublicLayout';
-import { Head, Link, useForm } from '@inertiajs/react';
-import { ChevronLeft, Camera, User, Mail, Phone, MapPin } from 'lucide-react';
+import { Head, Link, useForm, usePage } from '@inertiajs/react';
+import { ChevronLeft, Camera, User, Mail, Phone } from 'lucide-react';
 import Button from '../../Components/Forms/Button';
 import Input from '../../Components/Forms/Input';
 
 export default function EditProfile() {
+    const { auth, flash } = usePage().props;
+    const user = auth?.user || {};
+
     const { data, setData, post, processing, errors } = useForm({
-        name: 'Guest User',
-        email: 'guest@example.com',
-        phone: '+91 98765 43210',
-        address: 'Sector 62, Noida, UP',
+        name: user.name || '',
+        email: user.email || '',
+        phone: user.phone || '',
         image: null,
     });
 
     const handleSubmit = (e) => {
         e.preventDefault();
-        // Post logic here
+        post(route('update-profile'), {
+            preserveScroll: true
+        });
     };
 
     return (
         <PublicLayout>
             <Head title="Edit Profile" />
 
-            <div className="bg-white min-h-screen py-6 max-w-2xl mx-auto px-4 pb-24 md:pb-6">
+            <div className="bg-white min-h-[calc(100vh-64px)] py-6 max-w-2xl mx-auto px-4 pb-24 md:pb-6">
                 <div className="flex items-center gap-3 mb-8">
-                    <Link href="/settings" className="p-2 bg-gray-50 rounded-full hover:bg-gray-100 transition-colors">
+                    <Link href="/profile" className="p-2 bg-gray-50 rounded-full hover:bg-gray-100 transition-colors">
                         <ChevronLeft size={24} className="text-gray-900" />
                     </Link>
                     <h1 className="text-xl font-bold text-gray-900">Edit Profile</h1>
                 </div>
+
+                {flash?.success && (
+                    <div className="mb-6 p-4 bg-green-50 text-green-700 rounded-xl border border-green-100">
+                        {flash.success}
+                    </div>
+                )}
 
                 <div className="flex flex-col items-center mb-8">
                     <div className="relative">
@@ -79,14 +89,6 @@ export default function EditProfile() {
                         value={data.phone}
                         onChange={(e) => setData('phone', e.target.value)}
                         error={errors.phone}
-                    />
-
-                    <Input
-                        icon={MapPin}
-                        label="Address"
-                        value={data.address}
-                        onChange={(e) => setData('address', e.target.value)}
-                        error={errors.address}
                     />
 
                     <div className="pt-4">

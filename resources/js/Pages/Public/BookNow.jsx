@@ -8,8 +8,9 @@ import { Droplet, Wrench, Zap, Speaker, Hammer, PenTool, Check } from 'lucide-re
 export default function BookNow() {
     const [bookingComplete, setBookingComplete] = useState(false);
 
-    const { categories, flash } = usePage().props;
+    const { categories, addresses, flash } = usePage().props;
     const services = categories || [];
+    const userAddresses = addresses || [];
 
     const handleBookingSubmit = (data) => {
         router.post('/book-now', data, {
@@ -28,25 +29,27 @@ export default function BookNow() {
             <div className={`min-h-[calc(100vh-64px)] bg-gray-50 py-6 sm:py-12 px-4 sm:px-6 lg:px-8 flex items-center justify-center ${bookingComplete ? 'items-center' : 'items-start'}`}>
                 {!bookingComplete ? (
                     <div className="w-full">
-
-                        <BookingWizard services={services} onSubmit={handleBookingSubmit} />
+                        <BookingWizard services={services} addresses={userAddresses} onSubmit={handleBookingSubmit} />
                     </div>
                 ) : (
-                    <div className="text-center bg-white p-12 rounded-2xl shadow-xl max-w-lg w-full animate-fade-in-up">
-                        <div className="mx-auto flex items-center justify-center h-24 w-24 rounded-full bg-green-100 mb-8 animate-bounce-short">
-                            <Check className="h-12 w-12 text-green-600" />
+                    <div className="text-center bg-white p-12 rounded-3xl shadow-[0_8px_30px_rgb(0,0,0,0.08)] border border-gray-100 max-w-lg w-full animate-fade-in-up relative overflow-hidden">
+                        <div className="absolute top-0 left-0 w-full h-2 bg-gradient-to-r from-green-400 to-emerald-500"></div>
+                        <div className="mx-auto flex items-center justify-center h-28 w-28 rounded-full bg-green-50 mb-8 inset-0 shadow-inner">
+                            <div className="flex items-center justify-center h-20 w-20 rounded-full bg-green-500 text-white shadow-[0_0_20px_rgba(34,197,94,0.4)] animate-bounce-short">
+                                <Check className="h-10 w-10" strokeWidth={3} />
+                            </div>
                         </div>
-                        <h2 className="text-3xl font-extrabold text-gray-900 mb-4">Booking Confirmed!</h2>
-                        <p className="text-lg text-gray-500 mb-8">
-                            Your request has been officially received.
+                        <h2 className="text-3xl font-extrabold text-gray-900 mb-3 tracking-tight">Booking Confirmed!</h2>
+                        <p className="text-base text-gray-500 mb-8 leading-relaxed">
+                            Your service request has been successfully placed. We'll send you an update shortly.
                             <br />
-                            <span className="font-medium text-gray-900 mt-2 block">Booking ID: #RK-{Math.floor(100000 + Math.random() * 900000)}</span>
+                            <span className="font-bold text-gray-900 mt-4 block p-3 bg-gray-50 rounded-xl border border-gray-100">Booking ID: <span className="text-(--primary)">#RK-{Math.floor(100000 + Math.random() * 900000)}</span></span>
                         </p>
                         <div className="space-y-4">
-                            <Button onClick={() => setBookingComplete(false)} className="w-full justify-center py-3">
+                            <Button onClick={() => setBookingComplete(false)} className="w-full justify-center py-4 rounded-xl text-md font-bold shadow-md hover:shadow-lg transition-all">
                                 Book Another Service
                             </Button>
-                            <a href="/" className="block text-[var(--primary)] hover:underline font-medium">
+                            <a href="/" className="block text-gray-500 hover:text-(--primary) font-semibold transition-colors mt-2">
                                 Return to Home
                             </a>
                         </div>

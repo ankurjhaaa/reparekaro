@@ -28,10 +28,19 @@ Route::controller(PublicController::class)->group(function () {
         Route::get('/chat/{id}', 'chat')->name('chat');
         Route::get('/edit-profile', 'editProfile')->name('edit-profile');
         Route::get('/change-password', 'changePassword')->name('change-password');
+
+        // Dynamic Profile Updates
+        Route::post('/edit-profile', 'updateProfile')->name('update-profile');
+
+        // Address CRUD
+        Route::get('/addresses', 'addresses')->name('addresses');
+        Route::post('/addresses', 'storeAddress')->name('addresses.store');
+        Route::put('/addresses/{id}', 'updateAddress')->name('addresses.update');
+        Route::delete('/addresses/{id}', 'deleteAddress')->name('addresses.destroy');
     });
 });
 
-Route::controller(TechnicianController::class)->middleware(['auth','role:technician'])->prefix('technician')->group(function () {
+Route::controller(TechnicianController::class)->middleware(['auth', 'role:technician'])->prefix('technician')->group(function () {
     Route::get('/dashboard', 'dashboard')->name('technician.dashboard');
     Route::get('/jobs', 'jobs')->name('technician.jobs');
     Route::get('/job/{id}', 'jobDetails')->name('technician.job.details');
@@ -51,7 +60,7 @@ Route::controller(TechnicianController::class)->middleware(['auth','role:technic
     Route::get('/skills', 'skills')->name('technician.skills');
 });
 
-Route::controller(VendorController::class)->middleware(['auth','role:vendor'])->prefix('vendor')->group(function () {
+Route::controller(VendorController::class)->middleware(['auth', 'role:vendor'])->prefix('vendor')->group(function () {
     Route::get('/dashboard', 'dashboard')->name('vendor.dashboard');
     Route::get('/technicians', 'technicians')->name('vendor.technicians');
     Route::get('/bookings', 'bookings')->name('vendor.bookings');

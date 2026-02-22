@@ -1,60 +1,39 @@
 import React, { useState } from 'react';
 import PublicLayout from '../../Layouts/PublicLayout';
-import { Head, Link } from '@inertiajs/react';
+import { Head, Link, usePage } from '@inertiajs/react';
 import { Calendar, Clock, MapPin, Search, Filter, ChevronRight, Download, MoreVertical } from 'lucide-react';
 import Button from '../../Components/Forms/Button';
 
 export default function MyBookings() {
+    const { bookings } = usePage().props;
     const [activeTab, setActiveTab] = useState('upcoming');
 
-    const bookings = [
-        {
-            id: 'RK-88219',
-            service: 'AC Repair',
-            date: 'Feb 20, 2026',
-            time: '10:00 AM',
-            status: 'Confirmed',
-            amount: '₹499',
-            technician: 'Rahul Sharma',
-            type: 'upcoming',
-            image: 'https://images.unsplash.com/photo-1581094794329-c8112a89af12?auto=format&fit=crop&q=80&w=100'
-        },
-        {
-            id: 'RK-77321',
-            service: 'Plumbing Check',
-            date: 'Feb 22, 2026',
-            time: '02:00 PM',
-            status: 'Pending',
-            amount: '₹199',
-            technician: 'Assigning...',
-            type: 'upcoming',
-            image: 'https://images.unsplash.com/photo-1607472586893-edb57bdc0e39?auto=format&fit=crop&q=80&w=100'
-        },
-        {
-            id: 'RK-55102',
-            service: 'House Painting',
-            date: 'Jan 15, 2026',
-            time: '09:00 AM',
-            status: 'Completed',
-            amount: '₹2,500',
-            technician: 'Color Pro Team',
-            type: 'past',
-            image: 'https://images.unsplash.com/photo-1589939705384-5185137a7f0f?auto=format&fit=crop&q=80&w=100'
-        },
-        {
-            id: 'RK-44001',
-            service: 'Fan Installation',
-            date: 'Dec 10, 2025',
-            time: '04:30 PM',
-            status: 'Cancelled',
-            amount: '₹299',
-            technician: '-',
-            type: 'past',
-            image: 'https://images.unsplash.com/photo-1556911220-e15b29be8c8f?auto=format&fit=crop&q=80&w=100'
-        }
-    ];
+    // Parse statuses for our two tabs
+    const upcomingStatuses = ['pending', 'confirmed', 'assigned', 'in_progress', 'payment_pending'];
 
-    const filteredBookings = bookings.filter(b => b.type === activeTab);
+    // Map the raw DB array into display friendly format
+    const formattedBookings = (bookings || []).map(b => {
+        const services = b.service_ids ? JSON.parse(b.service_ids) : [];
+        const mainService = services.length > 0 ? services[0].title : 'Custom Service Request';
+        // Calculate type based on status for filtering
+        const type = upcomingStatuses.includes(b.status) ? 'upcoming' : 'past';
+
+        return {
+            id: b.booking_id || `RK-${b.id}`,
+            dbId: b.id,
+            service: mainService,
+            date: b.date ? new Date(b.date).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }) : 'Pending',
+            time: b.time || 'Pending',
+            status: b.status.charAt(0).toUpperCase() + b.status.slice(1).replace('_', ' '),
+            rawStatus: b.status,
+            amount: `₹${parseFloat(b.total_amount).toFixed(0)}`,
+            technician: b.assigned_to ? 'Assigned' : 'Pending',
+            type: type,
+            image: services.length > 0 && services[0].category_image ? services[0].category_image : 'https://images.unsplash.com/photo-1581094794329-c8112a89af12?auto=format&fit=crop&q=80&w=100'
+        };
+    });
+
+    const filteredBookings = formattedBookings.filter(b => b.type === activeTab);
 
     return (
         <PublicLayout>
@@ -116,9 +95,15 @@ export default function MyBookings() {
                                         <tr key={booking.id} className="hover:bg-gray-50 transition-colors group">
                                             <td className="px-6 py-4">
                                                 <div className="flex items-center gap-4">
-                                                    <img src={booking.image} alt="" className="w-12 h-12 rounded-lg object-cover bg-gray-100" />
+                                                    {booking.image ? (
+                                                        <img src={booking.image} alt="" className="w-12 h-12 rounded-lg object-cover bg-gray-100" />
+                                                    ) : (
+                                                        <div className="w-12 h-12 rounded-lg bg-gray-100 flex items-center justify-center">
+                                                            <MapPin className="text-gray-400" size={20} />
+                                                        </div>
+                                                    )}
                                                     <div>
-                                                        <p className="font-bold text-gray-900">{booking.service}</p>
+                                                        <p className="font-bold text-gray-900">{booking.service || 'Unknown Service'}</p>
                                                         <p className="text-xs text-gray-500">ID: {booking.id}</p>
                                                     </div>
                                                 </div>
@@ -126,28 +111,30 @@ export default function MyBookings() {
                                             <td className="px-6 py-4">
                                                 <div className="flex flex-col">
                                                     <span className="text-sm font-medium text-gray-900 flex items-center gap-2">
-                                                        <Calendar size={14} className="text-gray-400" /> {booking.date}
+                                                        <Calendar size={14} className="text-gray-400" /> {booking.date || 'Pending'}
                                                     </span>
                                                     <span className="text-xs text-gray-500 flex items-center gap-2 mt-1">
-                                                        <Clock size={14} className="text-gray-400" /> {booking.time}
+                                                        <Clock size={14} className="text-gray-400" /> {booking.time || 'Pending'}
                                                     </span>
                                                 </div>
                                             </td>
-                                            <td className="px-6 py-4 text-sm text-gray-700">{booking.technician}</td>
-                                            <td className="px-6 py-4 font-bold text-gray-900">{booking.amount}</td>
+                                            <td className="px-6 py-4 text-sm text-gray-700">{booking.technician || 'Pending'}</td>
+                                            <td className="px-6 py-4 font-bold text-gray-900">{booking.amount || '0'}</td>
                                             <td className="px-6 py-4">
                                                 <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${booking.status === 'Confirmed' ? 'bg-green-100 text-green-800' :
                                                     booking.status === 'Pending' ? 'bg-yellow-100 text-yellow-800' :
                                                         booking.status === 'Completed' ? 'bg-blue-100 text-blue-800' :
-                                                            'bg-red-100 text-red-800'
+                                                            'bg-gray-100 text-gray-800'
                                                     }`}>
-                                                    {booking.status}
+                                                    {booking.status || 'Pending'}
                                                 </span>
                                             </td>
                                             <td className="px-6 py-4 text-right">
-                                                <button className="text-gray-400 hover:text-(--primary) p-2 rounded-full hover:bg-gray-100 transition-all">
-                                                    <MoreVertical size={18} />
-                                                </button>
+                                                <Link href={`/booking/${booking.id}`}>
+                                                    <button className="text-gray-400 hover:text-(--primary) p-2 rounded-full hover:bg-gray-100 transition-all">
+                                                        <ChevronRight size={18} />
+                                                    </button>
+                                                </Link>
                                             </td>
                                         </tr>
                                     ))
@@ -167,20 +154,26 @@ export default function MyBookings() {
                                 <div key={booking.id} className="bg-white rounded-2xl p-4 shadow-sm border border-gray-100">
                                     <div className="flex justify-between items-start mb-4">
                                         <div className="flex gap-3">
-                                            <img src={booking.image} alt="" className="w-14 h-14 rounded-xl object-cover bg-gray-100" />
+                                            {booking.image ? (
+                                                <img src={booking.image} alt="" className="w-14 h-14 rounded-xl object-cover bg-gray-100" />
+                                            ) : (
+                                                <div className="w-14 h-14 rounded-xl bg-gray-100 flex items-center justify-center">
+                                                    <MapPin className="text-gray-400" size={24} />
+                                                </div>
+                                            )}
                                             <div>
-                                                <h3 className="font-bold text-gray-900">{booking.service}</h3>
+                                                <h3 className="font-bold text-gray-900">{booking.service || 'Unknown Service'}</h3>
                                                 <p className="text-xs text-gray-500 mt-0.5">ID: {booking.id}</p>
                                                 <span className={`mt-2 inline-flex items-center px-2 py-0.5 rounded-md text-[10px] font-bold uppercase tracking-wide ${booking.status === 'Confirmed' ? 'bg-green-50 text-green-700 border border-green-100' :
                                                     booking.status === 'Pending' ? 'bg-yellow-50 text-yellow-700 border border-yellow-100' :
                                                         booking.status === 'Completed' ? 'bg-blue-50 text-blue-700 border border-blue-100' :
-                                                            'bg-red-50 text-red-700 border border-red-100'
+                                                            'bg-gray-50 text-gray-700 border border-gray-100'
                                                     }`}>
-                                                    {booking.status}
+                                                    {booking.status || 'Pending'}
                                                 </span>
                                             </div>
                                         </div>
-                                        <p className="font-bold text-(--primary)">{booking.amount}</p>
+                                        <p className="font-bold text-(--primary)">{booking.amount || '0'}</p>
                                     </div>
 
                                     <div className="grid grid-cols-2 gap-3 py-3 border-t border-b border-gray-50">

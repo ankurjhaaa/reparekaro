@@ -1,9 +1,9 @@
 import React, { useState, useEffect } from 'react';
-import { Check, Calendar, Clock, MapPin, ArrowLeft, Loader2, Trash2, ChevronRight, CheckCircle2, User, Phone, Map, Navigation, AlertCircle } from 'lucide-react';
+import { Check, Calendar, Clock, MapPin, ArrowLeft, Loader2, Trash2, ChevronRight, CheckCircle2, User, Phone, Map, Navigation, AlertCircle, Plus, Home, Briefcase } from 'lucide-react';
 import Button from '../Forms/Button';
 import Input from '../Forms/Input';
 
-export default function BookingWizard({ services: categories, onSubmit }) {
+export default function BookingWizard({ services: categories, addresses = [], onSubmit }) {
     const [step, setStep] = useState(1);
     const [formData, setFormData] = useState({
         selectedServices: [],
@@ -20,6 +20,7 @@ export default function BookingWizard({ services: categories, onSubmit }) {
     const [availableDates, setAvailableDates] = useState([]);
     const [activeCategory, setActiveCategory] = useState(null);
     const [error, setError] = useState('');
+    const [showNewAddressForm, setShowNewAddressForm] = useState(!addresses || addresses.length === 0);
 
     useEffect(() => {
         const dates = [];
@@ -46,6 +47,19 @@ export default function BookingWizard({ services: categories, onSubmit }) {
             return () => clearTimeout(timer);
         }
     }, [error]);
+
+    const handleAddressSelect = (addr) => {
+        setFormData(prev => ({
+            ...prev,
+            name: addr.name || prev.name,
+            mobile: addr.mobile || prev.mobile,
+            address: addr.address || prev.address,
+            city: addr.city || prev.city,
+            landmark: addr.landmark || prev.landmark
+        }));
+        setError('');
+        setShowNewAddressForm(false);
+    };
 
     const handleServiceToggle = (rate) => {
         setError('');
@@ -119,27 +133,27 @@ export default function BookingWizard({ services: categories, onSubmit }) {
     const totalAmount = formData.selectedServices.reduce((sum, item) => sum + parseFloat(item.price), 0);
 
     return (
-        <div className="w-full max-w-2xl mx-auto bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden flex flex-col h-[calc(100vh-130px)] md:h-auto md:min-h-[500px] relative transition-all duration-300">
+        <div className="w-full max-w-2xl mx-auto bg-white rounded-xl shadow-md border border-gray-100 overflow-hidden flex flex-col h-[calc(100vh-130px)] md:h-auto md:min-h-[500px] relative transition-all duration-300">
             {/* Header */}
-            <div className="bg-white px-3 py-3 border-b border-gray-100 z-10 shrink-0 sticky top-0">
+            <div className="bg-white/90 backdrop-blur-md px-4 py-4 border-b border-gray-100 z-10 shrink-0 sticky top-0">
                 <div className="flex items-center justify-between">
                     {step > 1 ? (
-                        <button onClick={prevStep} className="p-1.5 -ml-1 text-gray-500 hover:text-gray-900 rounded-full hover:bg-gray-100 transition-colors">
+                        <button onClick={prevStep} className="p-2 -ml-2 text-gray-500 hover:text-gray-900 rounded-full hover:bg-gray-100 transition-all active:scale-95">
                             <ArrowLeft size={20} />
                         </button>
-                    ) : <div className="w-8"></div>}
+                    ) : <div className="w-9"></div>}
 
-                    <h2 className="text-base font-bold text-gray-900">
+                    <h2 className="text-lg font-bold text-gray-900 tracking-tight">
                         {step === 1 && 'Select Category'}
                         {step === 2 && 'Date & Time'}
-                        {step === 3 && 'Details'}
+                        {step === 3 && 'Service Details'}
                         {step === 4 && 'Review Booking'}
                     </h2>
 
-                    <div className="w-8"></div>
+                    <div className="w-9"></div>
                 </div>
 
-                <div className="mt-2 w-full bg-gray-100 h-1 rounded-full overflow-hidden">
+                <div className="mt-4 w-full bg-gray-100 h-1.5 rounded-full overflow-hidden">
                     <div
                         className="h-full bg-(--primary) transition-all duration-500 ease-out rounded-full"
                         style={{ width: `${(step / 4) * 100}%` }}
@@ -169,28 +183,28 @@ export default function BookingWizard({ services: categories, onSubmit }) {
                                 <span className="text-sm font-bold text-blue-900">₹{totalAmount}</span>
                             </div>
                         )}
-                        <div className="grid grid-cols-2 md:grid-cols-3 gap-3 mt-2">
+                        <div className="grid grid-cols-2 md:grid-cols-3 gap-4 mt-2 px-1">
                             {categories.map((category) => {
                                 const isSelected = isCategorySelected(category.id);
                                 return (
                                     <div
                                         key={category.id}
-                                        className={`cursor-pointer rounded-xl p-3 flex flex-col items-center justify-center text-center shadow-sm border transition-all active:scale-95 h-28 relative ${isSelected ? 'bg-blue-50/50 border-(--primary) ring-1 ring-(--primary)' : 'bg-white border-gray-200 hover:border-blue-300'}`}
+                                        className={`cursor-pointer rounded-xl p-4 flex flex-col items-center justify-center text-center shadow-sm border transition-all duration-300 hover:-translate-y-1 hover:shadow-md h-32 relative ${isSelected ? 'bg-blue-50/40 border-(--primary) ring-2 ring-(--primary)/20' : 'bg-white border-gray-100 hover:border-blue-200'}`}
                                         onClick={() => { setError(''); setActiveCategory(category); }}
                                     >
                                         {isSelected && (
-                                            <div className="absolute top-2 right-2 w-5 h-5 bg-(--primary) text-white rounded-full flex items-center justify-center shadow-sm">
+                                            <div className="absolute top-2.5 right-2.5 w-5 h-5 bg-(--primary) text-white rounded-full flex items-center justify-center shadow-sm animate-in zoom-in duration-200">
                                                 <Check size={12} strokeWidth={3} />
                                             </div>
                                         )}
-                                        <div className={`w-10 h-10 rounded-full overflow-hidden flex items-center justify-center mb-2 ${isSelected ? 'bg-(--primary) text-white' : 'bg-blue-50 text-(--primary)'}`}>
+                                        <div className={`w-12 h-12 rounded-full overflow-hidden flex items-center justify-center mb-3 shadow-inner ${isSelected ? 'bg-(--primary) text-white scale-110 transition-transform' : 'bg-gray-50 text-gray-400'}`}>
                                             {category.image_url ? (
                                                 <img src={category.image_url} alt={category.name} className="w-full h-full object-cover" />
                                             ) : (
-                                                <CheckCircle2 size={20} />
+                                                <CheckCircle2 size={24} />
                                             )}
                                         </div>
-                                        <h3 className={`font-semibold text-xs leading-tight px-1 ${isSelected ? 'text-(--primary)' : 'text-gray-900'}`}>{category.name}</h3>
+                                        <h3 className={`font-bold text-xs leading-tight px-1 ${isSelected ? 'text-(--primary)' : 'text-gray-700'}`}>{category.name}</h3>
                                     </div>
                                 );
                             })}
@@ -200,26 +214,27 @@ export default function BookingWizard({ services: categories, onSubmit }) {
 
                 {/* Step 2: Date & Time */}
                 {step === 2 && (
-                    <div className="p-3 animate-fade-in-right bg-white min-h-full">
-                        <div className="mb-6">
-                            <h3 className="text-gray-900 font-bold text-sm mb-3">When should we arrive?</h3>
+                    <div className="p-4 animate-fade-in-right bg-white min-h-full">
+                        <div className="mb-8">
+                            <h3 className="text-gray-900 font-extrabold text-sm mb-4">When should we arrive?</h3>
 
-                            <div className="flex gap-2 overflow-x-auto custom-scrollbar pb-2">
+                            <div className="flex gap-3 overflow-x-auto custom-scrollbar pb-3 px-1">
                                 {availableDates.map((d) => {
                                     const isSelected = formData.date === d.fullDate;
                                     return (
                                         <button
                                             key={d.fullDate}
                                             onClick={() => handleDateSelect(d.fullDate)}
-                                            className={`flex-1 min-w-[70px] flex flex-col items-center justify-center py-2 px-1 rounded-xl border transition-all ${isSelected
-                                                ? 'bg-(--primary) text-white border-(--primary) shadow-sm relative'
-                                                : 'bg-white border-gray-200 text-gray-700 hover:border-blue-200'
+                                            className={`flex-1 min-w-[76px] flex flex-col items-center justify-center py-3 px-2 rounded-xl border transition-all duration-300 hover:-translate-y-1 ${isSelected
+                                                ? 'bg-(--primary) text-white border-(--primary) shadow-md relative'
+                                                : 'bg-white border-gray-100 text-gray-700 hover:border-blue-200 hover:shadow-sm'
                                                 }`}
                                         >
-                                            <span className={`text-[10px] font-semibold mb-0.5 ${isSelected ? 'text-blue-100' : 'text-gray-500'}`}>{d.displayWord}</span>
-                                            <span className="text-base font-bold leading-none">{d.dayNumber}</span>
+                                            <span className={`text-[10px] uppercase tracking-wider font-bold mb-1 ${isSelected ? 'text-blue-100' : 'text-gray-400'}`}>{d.displayWord}</span>
+                                            <span className="text-xl font-extrabold leading-none mb-1">{d.dayNumber}</span>
+                                            <span className={`text-[10px] font-semibold ${isSelected ? 'text-blue-50' : 'text-gray-500'}`}>{d.month}</span>
                                             {isSelected && (
-                                                <div className="absolute -bottom-1 left-1/2 -translate-x-1/2 w-2 h-2 bg-(--primary) rotate-45 rounded-sm"></div>
+                                                <div className="absolute -bottom-1.5 left-1/2 -translate-x-1/2 w-3 h-3 bg-(--primary) rotate-45 rounded-sm"></div>
                                             )}
                                         </button>
                                     );
@@ -228,19 +243,19 @@ export default function BookingWizard({ services: categories, onSubmit }) {
                         </div>
 
                         <div>
-                            <h3 className="text-gray-900 font-bold text-sm mb-3">Select Time</h3>
-                            <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
+                            <h3 className="text-gray-900 font-extrabold text-sm mb-4">Select Time Slot</h3>
+                            <div className="grid grid-cols-2 sm:grid-cols-3 gap-3 px-1">
                                 {['09:00 AM', '10:00 AM', '11:00 AM', '12:00 PM', '01:00 PM', '02:00 PM', '03:00 PM', '04:00 PM', '05:00 PM'].map((time) => (
                                     <button
                                         key={time}
                                         onClick={() => handleTimeSelect(time)}
-                                        className={`py-3 rounded-lg border text-xs font-semibold transition-all active:scale-95 flex items-center justify-center gap-1.5 ${!formData.date ? 'opacity-50 cursor-pointer bg-gray-50 text-gray-400 border-gray-200' :
+                                        className={`py-3.5 rounded-xl border text-xs font-bold transition-all duration-200 active:scale-95 flex items-center justify-center gap-2 ${!formData.date ? 'opacity-50 cursor-pointer bg-gray-50 text-gray-400 border-gray-100' :
                                             formData.time === time
-                                                ? 'bg-blue-50 text-(--primary) border-(--primary)'
-                                                : 'bg-white text-gray-700 border-gray-200 hover:border-(--primary)'
+                                                ? 'bg-(--primary) text-white border-(--primary) shadow-md'
+                                                : 'bg-white text-gray-600 border-gray-100 hover:border-blue-200 hover:text-(--primary) hover:bg-blue-50/30'
                                             }`}
                                     >
-                                        <Clock size={14} className={formData.time === time ? 'text-(--primary)' : 'text-gray-400'} />
+                                        <Clock size={16} className={formData.time === time ? 'text-white' : 'text-gray-400'} />
                                         {time}
                                     </button>
                                 ))}
@@ -251,82 +266,145 @@ export default function BookingWizard({ services: categories, onSubmit }) {
 
                 {/* Step 3: Details */}
                 {step === 3 && (
-                    <div className="p-3 animate-fade-in-right">
-                        <div className="bg-white p-4 rounded-xl shadow-sm border border-gray-100 space-y-3">
-                            <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-                                <Input
-                                    label="Full Name *"
-                                    icon={User}
-                                    placeholder="John Doe"
-                                    value={formData.name}
-                                    onChange={(e) => { setError(''); setFormData({ ...formData, name: e.target.value }) }}
-                                />
-                                <Input
-                                    label="Mobile Number *"
-                                    icon={Phone}
-                                    placeholder="9876543210"
-                                    value={formData.mobile}
-                                    onChange={(e) => { setError(''); setFormData({ ...formData, mobile: e.target.value }) }}
-                                />
-                            </div>
+                    <div className="p-4 animate-fade-in-right space-y-5 bg-white min-h-full">
 
-                            <Input
-                                label="Service Address *"
-                                icon={MapPin}
-                                placeholder="House No, Street, Apartment..."
-                                value={formData.address}
-                                onChange={(e) => { setError(''); setFormData({ ...formData, address: e.target.value }) }}
-                            />
-
-                            <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-                                <Input
-                                    label="City *"
-                                    icon={Map}
-                                    placeholder="City Name"
-                                    value={formData.city}
-                                    onChange={(e) => { setError(''); setFormData({ ...formData, city: e.target.value }) }}
-                                />
-                                <Input
-                                    label="Landmark (Optional)"
-                                    icon={Navigation}
-                                    placeholder="Near Apollo"
-                                    value={formData.landmark}
-                                    onChange={(e) => setFormData({ ...formData, landmark: e.target.value })}
-                                />
+                        {/* Saved Addresses Section */}
+                        {addresses && addresses.length > 0 && (
+                            <div className="mb-4">
+                                <div className="flex items-center justify-between mb-4">
+                                    <h3 className="text-gray-900 font-extrabold text-sm">Saved Addresses</h3>
+                                    {!showNewAddressForm && (
+                                        <button
+                                            onClick={() => {
+                                                setShowNewAddressForm(true);
+                                                setFormData(prev => ({ ...prev, name: '', mobile: '', address: '', city: '', landmark: '' }));
+                                            }}
+                                            className="text-xs font-bold text-(--primary) flex items-center gap-1.5 hover:text-blue-700 bg-blue-50/50 hover:bg-blue-100 px-3 py-1.5 rounded-full transition-colors"
+                                        >
+                                            <Plus size={14} /> Add New
+                                        </button>
+                                    )}
+                                </div>
+                                <div className="flex flex-col gap-3 py-1">
+                                    {addresses.map(addr => {
+                                        const isSelected = formData.address === addr.address && formData.city === addr.city && !showNewAddressForm;
+                                        return (
+                                            <button
+                                                key={addr.id}
+                                                onClick={() => handleAddressSelect(addr)}
+                                                className={`w-full text-left bg-white border rounded-xl p-4 transition-all duration-200 focus:outline-none ${isSelected ? 'border-(--primary) shadow-sm ring-1 ring-(--primary) relative bg-blue-50/10' : 'border-gray-200 shadow-sm hover:border-blue-300 hover:shadow'}`}
+                                            >
+                                                <div className="flex items-start justify-between mb-2">
+                                                    <div className="flex items-center gap-2">
+                                                        <div className={`p-1.5 rounded-md ${isSelected ? 'bg-(--primary) text-white' : 'bg-gray-100 text-gray-500'}`}>
+                                                            {addr.address_type === 'home' ? <Home size={14} /> : addr.address_type === 'office' ? <Briefcase size={14} /> : <MapPin size={14} />}
+                                                        </div>
+                                                        <span className={`font-bold text-sm ${isSelected ? 'text-gray-900' : 'text-gray-700'}`}>{addr.name}</span>
+                                                    </div>
+                                                    <span className={`text-[10px] font-bold px-2 py-0.5 rounded uppercase shrink-0 ${isSelected ? 'bg-blue-100 text-blue-800' : 'bg-gray-100 text-gray-500'}`}>{addr.address_type}</span>
+                                                </div>
+                                                <p className={`text-xs pl-8 pr-6 leading-relaxed ${isSelected ? 'text-gray-700 font-medium' : 'text-gray-500'}`}>{addr.address}, {addr.city}</p>
+                                                {isSelected && (
+                                                    <div className="absolute top-1/2 -translate-y-1/2 right-4 text-(--primary) bg-white rounded-full">
+                                                        <CheckCircle2 size={24} className="fill-blue-100 text-(--primary)" />
+                                                    </div>
+                                                )}
+                                            </button>
+                                        )
+                                    })}
+                                </div>
                             </div>
-                        </div>
+                        )}
+
+                        {showNewAddressForm && (
+                            <div className="bg-gray-50 p-4 rounded-xl border border-gray-200 shadow-sm space-y-4">
+                                <div className="flex items-center justify-between border-b border-gray-200 pb-3 mb-4">
+                                    <h3 className="text-gray-900 font-bold text-sm">Enter Delivery Details</h3>
+                                    {addresses && addresses.length > 0 && (
+                                        <button
+                                            onClick={() => setShowNewAddressForm(false)}
+                                            className="text-xs text-gray-500 hover:text-gray-800 font-semibold px-3 py-1.5 rounded-full hover:bg-gray-200/50 transition-colors"
+                                        >
+                                            Cancel
+                                        </button>
+                                    )}
+                                </div>
+                                <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                                    <Input
+                                        label="Full Name *"
+                                        icon={User}
+                                        placeholder="John Doe"
+                                        value={formData.name}
+                                        onChange={(e) => { setError(''); setFormData({ ...formData, name: e.target.value }) }}
+                                    />
+                                    <Input
+                                        label="Mobile Number *"
+                                        icon={Phone}
+                                        placeholder="9876543210"
+                                        value={formData.mobile}
+                                        onChange={(e) => { setError(''); setFormData({ ...formData, mobile: e.target.value }) }}
+                                    />
+                                </div>
+
+                                <Input
+                                    label="Service Address *"
+                                    icon={MapPin}
+                                    placeholder="House No, Street, Apartment..."
+                                    value={formData.address}
+                                    onChange={(e) => { setError(''); setFormData({ ...formData, address: e.target.value }) }}
+                                />
+
+                                <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                                    <Input
+                                        label="City *"
+                                        icon={Map}
+                                        placeholder="City Name"
+                                        value={formData.city}
+                                        onChange={(e) => { setError(''); setFormData({ ...formData, city: e.target.value }) }}
+                                    />
+                                    <Input
+                                        label="Landmark (Optional)"
+                                        icon={Navigation}
+                                        placeholder="Near Apollo"
+                                        value={formData.landmark}
+                                        onChange={(e) => setFormData({ ...formData, landmark: e.target.value })}
+                                    />
+                                </div>
+                            </div>
+                        )}
                     </div>
                 )}
 
                 {/* Step 4: Review */}
                 {step === 4 && (
-                    <div className="p-3 animate-fade-in-right space-y-3">
-                        <div className="bg-white p-4 rounded-xl shadow-sm border border-gray-100">
-                            <h3 className="text-gray-900 font-bold text-sm mb-3 flex items-center justify-between">
-                                <span>Selected Items</span>
-                                <span className="text-[10px] bg-blue-100 text-blue-800 px-2 py-0.5 rounded-full border border-blue-200">{formData.selectedServices.length}</span>
+                    <div className="p-4 animate-fade-in-right space-y-4 bg-gray-50 min-h-full">
+                        <div className="bg-white p-4 rounded-xl shadow-sm border border-gray-200 relative overflow-hidden">
+                            <div className="absolute top-0 left-0 w-1 h-full bg-(--primary)"></div>
+                            <h3 className="text-gray-900 font-bold text-sm mb-4 flex items-center justify-between">
+                                <span>Order Summary</span>
+                                <span className="text-[10px] uppercase font-bold tracking-wider bg-blue-50 text-(--primary) px-2.5 py-1 rounded-md border border-blue-100">{formData.selectedServices.length} Items</span>
                             </h3>
-                            <div className="space-y-2 max-h-40 overflow-y-auto pr-1 custom-scrollbar">
+                            <div className="space-y-3 lg:max-h-60 overflow-y-auto pr-2 flex flex-col custom-scrollbar">
                                 {formData.selectedServices.map(s => (
-                                    <div key={s.id} className="flex flex-col gap-1 bg-gray-50 p-2.5 rounded-lg border border-gray-100">
+                                    <div key={s.id} className="flex flex-col gap-1 bg-white p-3 rounded-xl border border-gray-100 shadow-sm relative group hover:border-blue-100 transition-colors">
                                         <div className="flex items-start justify-between">
-                                            <div className="flex gap-2.5">
-                                                <div className="w-8 h-8 rounded-lg overflow-hidden bg-white flex items-center justify-center text-(--primary) shrink-0 border border-gray-200">
+                                            <div className="flex gap-3">
+                                                <div className="w-10 h-10 rounded-xl overflow-hidden bg-gray-50 flex items-center justify-center text-(--primary) shrink-0 border border-gray-100">
                                                     {s.category_image ? (
                                                         <img src={s.category_image} alt={s.title} className="w-full h-full object-cover" />
                                                     ) : (
-                                                        <CheckCircle2 size={14} />
+                                                        <CheckCircle2 size={16} />
                                                     )}
                                                 </div>
                                                 <div>
-                                                    <span className="font-semibold text-gray-900 text-xs leading-tight block pr-1">{s.title}</span>
-                                                    <span className="text-[10px] text-gray-500">{s.duration || 'Variable'}</span>
+                                                    <span className="font-extrabold text-gray-900 text-sm leading-tight block pr-1 mb-0.5">{s.title}</span>
+                                                    <span className="text-xs font-medium text-gray-500">{s.duration || 'Variable'}</span>
                                                 </div>
                                             </div>
-                                            <div className="text-right shrink-0 flex flex-col items-end">
-                                                <span className="text-xs text-gray-900 font-bold">₹{parseFloat(s.price).toFixed(0)}</span>
-                                                <button onClick={() => handleServiceToggle(s)} className="text-red-400 hover:text-red-600 p-1 -mr-1 transition-colors">
-                                                    <Trash2 size={12} />
+                                            <div className="flex flex-col items-end shrink-0">
+                                                <span className="text-sm text-gray-900 font-black">₹{parseFloat(s.price).toFixed(0)}</span>
+                                                <button onClick={() => handleServiceToggle(s)} className="text-red-400 hover:text-white hover:bg-red-500 rounded-md p-1.5 -mr-1.5 transition-colors mt-1">
+                                                    <Trash2 size={14} />
                                                 </button>
                                             </div>
                                         </div>
@@ -334,33 +412,39 @@ export default function BookingWizard({ services: categories, onSubmit }) {
                                 ))}
                             </div>
 
-                            <div className="mt-3 pt-3 border-t border-gray-100 flex items-center justify-between font-bold text-gray-900 text-sm">
+                            <div className="mt-4 pt-4 border-t-2 border-dashed border-gray-100 flex items-center justify-between font-black text-gray-900 text-lg">
                                 <span>Total Amount</span>
-                                <span className="text-base text-(--primary)">₹{totalAmount.toFixed(0)}</span>
+                                <span className="text-2xl text-(--primary)">₹{totalAmount.toFixed(0)}</span>
                             </div>
                         </div>
 
-                        <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-3 space-y-2">
-                            <div className="flex items-center justify-between p-2 hover:bg-gray-50 rounded-lg cursor-pointer transition-colors" onClick={() => setStep(2)}>
-                                <div className="flex items-center gap-2.5">
-                                    <Calendar size={16} className="text-gray-400" />
+                        <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-2 space-y-1">
+                            <div className="flex items-center justify-between p-3 hover:bg-gray-50 rounded-xl cursor-pointer transition-colors group" onClick={() => setStep(2)}>
+                                <div className="flex items-center gap-4">
+                                    <div className="bg-blue-50 text-(--primary) p-2.5 rounded-xl group-hover:scale-110 transition-transform">
+                                        <Calendar size={18} />
+                                    </div>
                                     <div>
-                                        <p className="text-[10px] text-gray-400 font-medium uppercase tracking-wider">Schedule</p>
-                                        <p className="text-xs font-semibold text-gray-900">{formData.date} at {formData.time}</p>
+                                        <p className="text-[10px] text-gray-400 font-bold uppercase tracking-widest mb-0.5">Schedule</p>
+                                        <p className="text-sm font-extrabold text-gray-900">{formData.date} at {formData.time}</p>
                                     </div>
                                 </div>
-                                <ChevronRight size={14} className="text-gray-300" />
+                                <ChevronRight size={16} className="text-gray-300 group-hover:text-(--primary) transition-colors" />
                             </div>
 
-                            <div className="flex items-center justify-between p-2 hover:bg-gray-50 rounded-lg cursor-pointer transition-colors" onClick={() => setStep(3)}>
-                                <div className="flex items-center gap-2.5">
-                                    <MapPin size={16} className="text-gray-400" />
+                            <div className="h-px bg-gray-50 mx-4"></div>
+
+                            <div className="flex items-center justify-between p-3 hover:bg-gray-50 rounded-xl cursor-pointer transition-colors group" onClick={() => setStep(3)}>
+                                <div className="flex items-center gap-4">
+                                    <div className="bg-blue-50 text-(--primary) p-2.5 rounded-xl group-hover:scale-110 transition-transform">
+                                        <MapPin size={18} />
+                                    </div>
                                     <div>
-                                        <p className="text-[10px] text-gray-400 font-medium uppercase tracking-wider">Address</p>
-                                        <p className="text-xs font-semibold text-gray-900 truncate max-w-[180px]">{formData.address}, {formData.city}</p>
+                                        <p className="text-[10px] text-gray-400 font-bold uppercase tracking-widest mb-0.5">Delivery Address</p>
+                                        <p className="text-sm font-extrabold text-gray-900 truncate max-w-[180px] sm:max-w-xs">{formData.address}, {formData.city}</p>
                                     </div>
                                 </div>
-                                <ChevronRight size={14} className="text-gray-300" />
+                                <ChevronRight size={16} className="text-gray-300 group-hover:text-(--primary) transition-colors" />
                             </div>
                         </div>
                     </div>
