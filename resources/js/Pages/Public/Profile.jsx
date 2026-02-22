@@ -3,7 +3,11 @@ import PublicLayout from '../../Layouts/PublicLayout';
 import { Head, Link } from '@inertiajs/react';
 import { User, Settings, LogOut, HelpCircle, Bell, ChevronRight, Bookmark, Calendar, Shield } from 'lucide-react';
 
+import { usePage } from '@inertiajs/react';
+
 export default function Profile() {
+    const { auth } = usePage().props;
+    const user = auth?.user;
     const menuItems = [
         { name: 'My Bookings', icon: Calendar, href: '/my-bookings', desc: 'View past and upcoming jobs' },
         { name: 'Saved Services', icon: Bookmark, href: '/saved-services', desc: 'Your favorite services' },
@@ -22,14 +26,16 @@ export default function Profile() {
                     <div className="w-24 h-24 rounded-full bg-white/20 border-4 border-white/30 flex items-center justify-center mx-auto mb-4 backdrop-blur-sm">
                         <User size={40} className="text-white" />
                     </div>
-                    <h2 className="text-2xl font-bold">Guest User</h2>
-                    <p className="text-blue-100 text-sm mt-1">Sign in to manage your bookings</p>
-                    <Link
-                        href="/login"
-                        className="inline-block mt-6 px-8 py-3 bg-white text-(--primary) rounded-full font-bold text-sm shadow-xl hover:shadow-2xl transition-all active:scale-95"
-                    >
-                        Sign In / Register
-                    </Link>
+                    <h2 className="text-2xl font-bold">{user ? user.name : 'Guest User'}</h2>
+                    <p className="text-blue-100 text-sm mt-1">{user ? user.email : 'Sign in to manage your bookings'}</p>
+                    {!user && (
+                        <Link
+                            href="/login"
+                            className="inline-block mt-6 px-8 py-3 bg-white text-(--primary) rounded-full font-bold text-sm shadow-xl hover:shadow-2xl transition-all active:scale-95"
+                        >
+                            Sign In / Register
+                        </Link>
+                    )}
                 </div>
 
                 <div className="px-4 -mt-12">
@@ -51,16 +57,18 @@ export default function Profile() {
                         ))}
                     </div>
 
-                    <div className="mt-6 bg-white rounded-3xl shadow-xl overflow-hidden border border-gray-100">
-                        <button className="w-full flex items-center justify-between p-5 hover:bg-red-50 text-red-500 transition-colors group">
-                            <div className="flex items-center gap-4">
-                                <div className="w-12 h-12 rounded-2xl bg-red-50 group-hover:bg-red-100 flex items-center justify-center transition-colors">
-                                    <LogOut size={22} />
+                    {user && (
+                        <div className="mt-6 bg-white rounded-3xl shadow-xl overflow-hidden border border-gray-100">
+                            <Link href="/logout" method="post" as="button" className="w-full flex items-center justify-between p-5 hover:bg-red-50 text-red-500 transition-colors group">
+                                <div className="flex items-center gap-4">
+                                    <div className="w-12 h-12 rounded-2xl bg-red-50 group-hover:bg-red-100 flex items-center justify-center transition-colors">
+                                        <LogOut size={22} />
+                                    </div>
+                                    <span className="font-semibold text-base">Log Out</span>
                                 </div>
-                                <span className="font-semibold text-base">Log Out</span>
-                            </div>
-                        </button>
-                    </div>
+                            </Link>
+                        </div>
+                    )}
 
                     <p className="text-center text-xs text-gray-400 mt-8 mb-4">App Version 1.0.0</p>
                 </div>
@@ -76,21 +84,25 @@ export default function Profile() {
                                 <div className="w-32 h-32 rounded-full bg-blue-50 border-4 border-white shadow-sm flex items-center justify-center mx-auto mb-6">
                                     <User size={64} className="text-(--primary)" />
                                 </div>
-                                <h2 className="text-2xl font-bold text-gray-900">Guest User</h2>
-                                <p className="text-gray-500 text-sm mt-1 mb-6">Welcome to RepairKaro</p>
-                                <Link
-                                    href="/login"
-                                    className="block w-full py-3 bg-(--primary) text-white rounded-xl font-bold shadow-lg shadow-blue-500/30 hover:shadow-xl hover:bg-blue-700 transition-all"
-                                >
-                                    Sign In / Register
-                                </Link>
-                                <div className="mt-8 pt-8 border-t border-gray-100 text-left">
-                                    <h3 className="text-xs font-bold text-gray-400 uppercase tracking-wider mb-4">Account</h3>
-                                    <button className="flex items-center gap-3 text-red-500 hover:text-red-700 hover:bg-red-50 p-2 rounded-lg w-full transition-colors">
-                                        <LogOut size={18} />
-                                        <span className="font-medium">Log Out</span>
-                                    </button>
-                                </div>
+                                <h2 className="text-2xl font-bold text-gray-900">{user ? user.name : 'Guest User'}</h2>
+                                <p className="text-gray-500 text-sm mt-1 mb-6">{user ? user.email : 'Welcome to RepairKaro'}</p>
+                                {!user && (
+                                    <Link
+                                        href="/login"
+                                        className="block w-full py-3 bg-(--primary) text-white rounded-xl font-bold shadow-lg shadow-blue-500/30 hover:shadow-xl hover:bg-blue-700 transition-all"
+                                    >
+                                        Sign In / Register
+                                    </Link>
+                                )}
+                                {user && (
+                                    <div className="mt-8 pt-8 border-t border-gray-100 text-left">
+                                        <h3 className="text-xs font-bold text-gray-400 uppercase tracking-wider mb-4">Account</h3>
+                                        <Link href="/logout" method="post" as="button" className="flex items-center gap-3 text-red-500 hover:text-red-700 hover:bg-red-50 p-2 rounded-lg w-full transition-colors">
+                                            <LogOut size={18} />
+                                            <span className="font-medium">Log Out</span>
+                                        </Link>
+                                    </div>
+                                )}
                             </div>
                         </div>
 

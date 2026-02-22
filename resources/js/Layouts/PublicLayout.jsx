@@ -7,14 +7,19 @@ import Button from '../Components/Forms/Button';
 export default function PublicLayout({ children }) {
     const { url } = usePage();
 
+    const { auth } = usePage().props;
+
     const navigation = [
         { name: 'Home', href: '/' },
         { name: 'Services', href: '/services' },
         { name: 'About Us', href: '/about' },
         { name: 'Contact', href: '/contact' },
         { name: 'Help & FAQ', href: '/help' },
-        { name: 'My Bookings', href: '/my-bookings' },
     ];
+
+    if (auth?.user) {
+        navigation.push({ name: 'My Bookings', href: '/my-bookings' });
+    }
 
     return (
         <div className="min-h-screen bg-gray-50 flex flex-col font-sans text-gray-900">
@@ -41,8 +46,8 @@ export default function PublicLayout({ children }) {
                                     key={item.name}
                                     href={item.href}
                                     className={`inline-flex items-center px-1 pt-1 text-sm font-medium border-b-2 transition-colors duration-200 ${url === item.href || (url.startsWith(item.href) && item.href !== '/')
-                                            ? 'border-(--primary) text-gray-900'
-                                            : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
+                                        ? 'border-(--primary) text-gray-900'
+                                        : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
                                         }`}
                                 >
                                     {item.name}
@@ -52,9 +57,20 @@ export default function PublicLayout({ children }) {
 
                         {/* Desktop Actions */}
                         <div className="hidden md:flex items-center gap-4">
-                            <Link href="/login" className="text-sm font-medium text-gray-500 hover:text-gray-900">
-                                Sign in
-                            </Link>
+                            {auth?.user ? (
+                                <div className="flex items-center gap-4">
+                                    <Link href="/profile" className="text-sm font-medium text-gray-700 hover:text-(--primary)">
+                                        Hi, {auth.user.name.split(' ')[0]}
+                                    </Link>
+                                    <Link href="/logout" method="post" as="button" className="text-sm font-medium text-red-500 hover:text-red-700">
+                                        Logout
+                                    </Link>
+                                </div>
+                            ) : (
+                                <Link href="/login" className="text-sm font-medium text-gray-500 hover:text-gray-900">
+                                    Sign in
+                                </Link>
+                            )}
                             <Link href="/book-now">
                                 <Button size="sm" className="shadow-md hover:shadow-lg transition-shadow">
                                     Book Now

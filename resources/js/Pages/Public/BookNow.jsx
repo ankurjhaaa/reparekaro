@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import PublicLayout from '../../Layouts/PublicLayout';
-import { Head } from '@inertiajs/react';
+import { Head, usePage, router } from '@inertiajs/react';
 import Button from '../../Components/Forms/Button';
 import BookingWizard from '../../Components/Booking/BookingWizard';
 import { Droplet, Wrench, Zap, Speaker, Hammer, PenTool, Check } from 'lucide-react';
@@ -8,23 +8,17 @@ import { Droplet, Wrench, Zap, Speaker, Hammer, PenTool, Check } from 'lucide-re
 export default function BookNow() {
     const [bookingComplete, setBookingComplete] = useState(false);
 
-    // Dummy Booking Data - Simulating Database
-    const services = [
-        { id: 'ac', title: 'AC Repair', icon: Droplet, desc: 'AC Service, Repair & Installation' },
-        { id: 'plumbing', title: 'Plumbing', icon: Wrench, desc: 'Pipe, Tap, Basin & Bath Fittings' },
-        { id: 'electrical', title: 'Electrical', icon: Zap, desc: 'Switch, Wiring, Fan & Light' },
-        { id: 'appliances', title: 'Appliances', icon: Speaker, desc: 'TV, Fridge, Washing Machine, Microwave' },
-        { id: 'carpenter', title: 'Carpenter', icon: Hammer, desc: 'Furniture Repair & Assembly' },
-        { id: 'painting', title: 'Home Painting', icon: PenTool, desc: 'Wall Painting & Waterproofing' },
-    ];
+    const { categories, flash } = usePage().props;
+    const services = categories || [];
 
     const handleBookingSubmit = (data) => {
-        console.log('Final Booking Data:', data);
-        // Simulate API call delay
-        setTimeout(() => {
-            setBookingComplete(true);
-            window.scrollTo(0, 0);
-        }, 1000);
+        router.post('/book-now', data, {
+            onSuccess: () => {
+                setBookingComplete(true);
+                window.scrollTo(0, 0);
+            },
+            preserveScroll: true
+        });
     };
 
     return (
@@ -34,14 +28,7 @@ export default function BookNow() {
             <div className={`min-h-[calc(100vh-64px)] bg-gray-50 py-6 sm:py-12 px-4 sm:px-6 lg:px-8 flex items-center justify-center ${bookingComplete ? 'items-center' : 'items-start'}`}>
                 {!bookingComplete ? (
                     <div className="w-full">
-                        <div className="text-center mb-10">
-                            <h1 className="text-3xl font-extrabold text-gray-900 sm:text-4xl">
-                                Book Your Service
-                            </h1>
-                            <p className="mt-4 text-lg text-gray-500 max-w-2xl mx-auto">
-                                Select a service below to get started. Our verified professionals are ready to help.
-                            </p>
-                        </div>
+
                         <BookingWizard services={services} onSubmit={handleBookingSubmit} />
                     </div>
                 ) : (

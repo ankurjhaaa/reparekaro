@@ -1,19 +1,16 @@
 import React from 'react';
 import PublicLayout from '../../Layouts/PublicLayout';
-import { Head, Link } from '@inertiajs/react';
+import { Head, Link, usePage } from '@inertiajs/react';
 import Button from '../../Components/Forms/Button';
 import { Shield, Clock, PenTool, Star, ArrowRight, Check, Wrench, Speaker, Droplet, Zap, Hammer, ChevronRight, MapPin, Search as SearchIcon, Bell, Percent, Ticket } from 'lucide-react';
 import Card from '../../Components/Cards/Card';
 
 export default function Home() {
-    const services = [
-        { id: 'ac', title: 'AC Repair', icon: Droplet, desc: 'Cooling', image: 'https://images.unsplash.com/photo-1581094794329-c8112a89af12?auto=format&fit=crop&q=80&w=500' },
-        { id: 'plumbing', title: 'Plumbing', icon: Wrench, desc: 'Leaks', image: 'https://images.unsplash.com/photo-1607472586893-edb57bdc0e39?auto=format&fit=crop&q=80&w=500' },
-        { id: 'electrical', title: 'Electrical', icon: Zap, desc: 'Wiring', image: 'https://images.unsplash.com/photo-1621905251189-08b45d6a269e?auto=format&fit=crop&q=80&w=500' },
-        { id: 'appliances', title: 'Appliances', icon: Speaker, desc: 'Fixes', image: 'https://images.unsplash.com/photo-1556911220-e15b29be8c8f?auto=format&fit=crop&q=80&w=500' },
-        { id: 'carpenter', title: 'Carpenter', icon: Hammer, desc: 'Furniture', image: 'https://images.unsplash.com/photo-1622937000305-d8056bf9a347?auto=format&fit=crop&q=80&w=500' },
-        { id: 'painting', title: 'Painting', icon: PenTool, desc: 'Colors', image: 'https://images.unsplash.com/photo-1589939705384-5185137a7f0f?auto=format&fit=crop&q=80&w=500' },
-    ];
+    const { auth, services: dynamicServices } = usePage().props;
+    const user = auth?.user;
+
+    // Safely fallback if services prop is missing
+    const services = dynamicServices || [];
 
     const testimonials = [
         { name: "Rahul S.", role: "Homeowner", text: "Amazing service! The AC technician arrived within an hour.", rating: 5 },
@@ -33,8 +30,17 @@ export default function Home() {
                             <MapPin size={16} />
                         </div>
                         <div>
-                            <p className="text-[10px] text-blue-100 uppercase font-semibold tracking-wider">Current Location</p>
-                            <p className="text-sm font-bold flex items-center gap-1">Sector 62, Noida <ChevronRight size={14} /></p>
+                            {user ? (
+                                <>
+                                    <p className="text-[10px] text-blue-100 uppercase font-semibold tracking-wider">Hi, {user.name.split(' ')[0]} 👋</p>
+                                    <p className="text-sm font-bold flex items-center gap-1">Sector 62, Noida <ChevronRight size={14} /></p>
+                                </>
+                            ) : (
+                                <>
+                                    <p className="text-[10px] text-blue-100 uppercase font-semibold tracking-wider">Current Location</p>
+                                    <p className="text-sm font-bold flex items-center gap-1">Sector 62, Noida <ChevronRight size={14} /></p>
+                                </>
+                            )}
                         </div>
                     </div>
                     <div className="p-2 bg-white/20 rounded-full backdrop-blur-sm relative">
@@ -153,12 +159,17 @@ export default function Home() {
                         {services.map((service, idx) => (
                             <Link key={idx} href="/book-now" className="group block">
                                 <div className="bg-white rounded-xl md:rounded-2xl p-3 md:p-6 text-center shadow-sm hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1 h-full flex flex-col items-center justify-center border border-transparent hover:border-blue-100 relative overflow-hidden aspect-square md:aspect-auto">
-                                    <div className="w-10 h-10 md:w-14 md:h-14 rounded-full md:rounded-2xl bg-blue-50 text-(--primary) flex items-center justify-center mb-2 md:mb-4 group-hover:bg-(--primary) group-hover:text-white transition-colors duration-300">
-                                        <service.icon size={20} className="md:hidden" />
-                                        <service.icon size={28} strokeWidth={1.5} className="hidden md:block" />
+                                    <div className="w-10 h-10 md:w-14 md:h-14 rounded-full md:rounded-2xl mb-2 md:mb-4 group-hover:bg-gray-50 transition-colors duration-300 overflow-hidden relative">
+                                        {service.image_url ? (
+                                            <img src={service.image_url} alt={service.name} className="w-full h-full object-cover" />
+                                        ) : (
+                                            <div className="w-full h-full bg-blue-50 text-(--primary) flex items-center justify-center">
+                                                <Wrench size={20} className="md:hidden" />
+                                                <Wrench size={28} strokeWidth={1.5} className="hidden md:block" />
+                                            </div>
+                                        )}
                                     </div>
-                                    <h3 className="font-semibold text-gray-900 text-xs md:text-base mb-0 md:mb-1 leading-tight">{service.title}</h3>
-                                    <p className="hidden md:block text-xs text-gray-500">{service.desc}</p>
+                                    <h3 className="font-semibold text-gray-900 text-xs md:text-base mb-0 md:mb-1 leading-tight">{service.name}</h3>
                                 </div>
                             </Link>
                         ))}

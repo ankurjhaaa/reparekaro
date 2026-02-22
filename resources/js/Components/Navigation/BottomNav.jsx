@@ -1,6 +1,6 @@
 import React from 'react';
 import { Link, usePage } from '@inertiajs/react';
-import { Home, Calendar, User, Search, Briefcase, Wallet } from 'lucide-react';
+import { Home, Calendar, User, Search, Briefcase, Wallet, LogIn } from 'lucide-react';
 
 export default function BottomNav({ userType = 'public' }) {
     const { url } = usePage();

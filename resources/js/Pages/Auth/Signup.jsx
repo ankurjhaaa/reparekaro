@@ -9,13 +9,11 @@ export default function Signup() {
         name: '',
         email: '',
         password: '',
-        password_confirmation: '',
     });
 
     const submit = (e) => {
         e.preventDefault();
-        // post('/signup');
-        console.log('Signup attempt with', data);
+        post('/signup');
     };
 
     return (
@@ -68,15 +66,7 @@ export default function Signup() {
                             error={errors.password}
                         />
 
-                        <Input
-                            label="Confirm Password"
-                            icon={Lock}
-                            type="password"
-                            placeholder="Repeat password"
-                            value={data.password_confirmation}
-                            onChange={(e) => setData('password_confirmation', e.target.value)}
-                            error={errors.password_confirmation}
-                        />
+
 
                         <div className="flex items-start">
                             <input id="terms" type="checkbox" className="mt-1 rounded border-gray-300 text-[var(--primary)] shadow-sm focus:ring-[var(--primary)]" />

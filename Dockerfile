@@ -34,3 +34,4 @@ RUN npm run build
 RUN chown -R www-data:www-data /var/www
 
 USER www-data
+

@@ -15,9 +15,9 @@ return new class extends Migration {
 
             // Relations
             $table->foreignId('booking_id')->constrained()->cascadeOnDelete();
-            $table->foreignId('user_id')->constrained()->cascadeOnDelete();
-            $table->foreignId('vendor_id')->nullable()->constrained()->nullOnDelete();
-            $table->foreignId('technician_id')->nullable()->constrained()->nullOnDelete();
+            $table->foreignId('user_id')->nullable()->constrained()->cascadeOnDelete();
+            $table->foreignId('vendor_id')->nullable()->constrained('users')->cascadeOnDelete();
+            $table->foreignId('technician_id')->nullable()->constrained('users')->cascadeOnDelete();
 
             // Payment Details
             $table->string('transaction_id')->unique();

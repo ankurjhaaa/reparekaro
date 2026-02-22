@@ -13,8 +13,8 @@ return new class extends Migration {
         Schema::create('payouts', function (Blueprint $table) {
             $table->id();
 
-            $table->foreignId('vendor_id')->nullable()->constrained()->nullOnDelete();
-            $table->foreignId('technician_id')->nullable()->constrained()->nullOnDelete();
+            $table->foreignId('vendor_id')->nullable()->constrained('users')->nullOnDelete();
+            $table->foreignId('technician_id')->nullable()->constrained('users')->nullOnDelete();
 
             $table->decimal('amount', 10, 2);
             $table->enum('type', ['vendor', 'technician']);

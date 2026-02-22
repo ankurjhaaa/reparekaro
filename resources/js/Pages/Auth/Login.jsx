@@ -13,8 +13,7 @@ export default function Login() {
 
     const submit = (e) => {
         e.preventDefault();
-        // post('/login');
-        console.log('Login attempt with', data);
+        post('/login');
     };
 
     return (
