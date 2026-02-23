@@ -4,7 +4,7 @@ import BottomNav from '../Components/Navigation/BottomNav';
 import { Rocket, Phone, Mail, MapPin, Facebook, Twitter, Instagram, Linkedin, ExternalLink } from 'lucide-react';
 import Button from '../Components/Forms/Button';
 
-export default function PublicLayout({ children }) {
+export default function PublicLayout({ children, noFooter = false, noScroll = false }) {
     const { url } = usePage();
 
     const { auth } = usePage().props;
@@ -22,7 +22,7 @@ export default function PublicLayout({ children }) {
     }
 
     return (
-        <div className="min-h-screen bg-gray-50 flex flex-col font-sans text-gray-900">
+        <div className={`min-h-screen bg-gray-50 flex flex-col font-sans text-gray-900 ${noScroll ? 'h-screen overflow-hidden' : ''}`}>
             {/* Desktop Header */}
             <header className="bg-white shadow-sm sticky top-0 z-50">
                 <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -87,82 +87,84 @@ export default function PublicLayout({ children }) {
             </header>
 
             {/* Main Content */}
-            <main className="flex-1 pb-16 md:pb-0 relative">
+            <main className={`flex-1 relative ${noScroll ? 'flex flex-col overflow-hidden pb-16 md:pb-0' : 'pb-16 md:pb-0'}`}>
                 {children}
             </main>
 
             {/* Desktop Footer (Hidden on Mobile for 'App' feel, or maybe simplified) */}
-            <footer className="bg-white border-t border-gray-200 mt-auto hidden md:block">
-                <div className="max-w-7xl mx-auto py-12 px-4 sm:px-6 lg:px-8">
-                    <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
-                        {/* Brand */}
-                        <div className="col-span-1 md:col-span-1">
-                            <Link href="/" className="flex items-center gap-2 mb-4">
-                                <div className="bg-(--primary) text-white p-1.5 rounded-lg">
-                                    <Rocket className="h-5 w-5" />
+            {!noFooter && (
+                <footer className="bg-white border-t border-gray-200 mt-auto hidden md:block">
+                    <div className="max-w-7xl mx-auto py-12 px-4 sm:px-6 lg:px-8">
+                        <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
+                            {/* Brand */}
+                            <div className="col-span-1 md:col-span-1">
+                                <Link href="/" className="flex items-center gap-2 mb-4">
+                                    <div className="bg-(--primary) text-white p-1.5 rounded-lg">
+                                        <Rocket className="h-5 w-5" />
+                                    </div>
+                                    <span className="text-xl font-bold text-gray-900">RepairKaro</span>
+                                </Link>
+                                <p className="text-sm text-gray-500 mb-4 block">
+                                    Expert home services at your doorstep. Reliable, fast, and affordable.
+                                </p>
+                                <div className="flex space-x-4">
+                                    <a href="#" className="text-gray-400 hover:text-(--primary)"><Facebook size={20} /></a>
+                                    <a href="#" className="text-gray-400 hover:text-(--primary)"><Twitter size={20} /></a>
+                                    <a href="#" className="text-gray-400 hover:text-(--primary)"><Instagram size={20} /></a>
+                                    <a href="#" className="text-gray-400 hover:text-(--primary)"><Linkedin size={20} /></a>
                                 </div>
-                                <span className="text-xl font-bold text-gray-900">RepairKaro</span>
-                            </Link>
-                            <p className="text-sm text-gray-500 mb-4 block">
-                                Expert home services at your doorstep. Reliable, fast, and affordable.
-                            </p>
-                            <div className="flex space-x-4">
-                                <a href="#" className="text-gray-400 hover:text-(--primary)"><Facebook size={20} /></a>
-                                <a href="#" className="text-gray-400 hover:text-(--primary)"><Twitter size={20} /></a>
-                                <a href="#" className="text-gray-400 hover:text-(--primary)"><Instagram size={20} /></a>
-                                <a href="#" className="text-gray-400 hover:text-(--primary)"><Linkedin size={20} /></a>
+                            </div>
+
+                            {/* Quick Links */}
+                            <div>
+                                <h3 className="text-sm font-semibold text-gray-400 tracking-wider uppercase mb-4">Platform</h3>
+                                <ul className="space-y-3">
+                                    <li><Link href="/" className="text-base text-gray-500 hover:text-gray-900">Home</Link></li>
+                                    <li><Link href="/services" className="text-base text-gray-500 hover:text-gray-900">Services</Link></li>
+                                    <li><Link href="/book-now" className="text-base text-gray-500 hover:text-gray-900">Book Service</Link></li>
+                                    <li><Link href="/my-bookings" className="text-base text-gray-500 hover:text-gray-900">My Bookings</Link></li>
+                                </ul>
+                            </div>
+
+                            {/* Company */}
+                            <div>
+                                <h3 className="text-sm font-semibold text-gray-400 tracking-wider uppercase mb-4">Company</h3>
+                                <ul className="space-y-3">
+                                    <li><Link href="/about" className="text-base text-gray-500 hover:text-gray-900">About Us</Link></li>
+                                    <li><Link href="/contact" className="text-base text-gray-500 hover:text-gray-900">Contact</Link></li>
+                                    <li><Link href="/help" className="text-base text-gray-500 hover:text-gray-900">Help & FAQ</Link></li>
+                                    <li><Link href="#" className="text-base text-gray-500 hover:text-gray-900">Privacy Policy</Link></li>
+                                </ul>
+                            </div>
+
+                            {/* Contact */}
+                            <div>
+                                <h3 className="text-sm font-semibold text-gray-400 tracking-wider uppercase mb-4">Contact</h3>
+                                <ul className="space-y-3">
+                                    <li className="flex items-start">
+                                        <MapPin className="h-5 w-5 text-gray-400 mr-2 shrink-0" />
+                                        <span className="text-base text-gray-500">Sector 62, Noida, UP 201301</span>
+                                    </li>
+                                    <li className="flex items-center">
+                                        <Phone className="h-5 w-5 text-gray-400 mr-2 shrink-0" />
+                                        <span className="text-base text-gray-500">+91 98765 43210</span>
+                                    </li>
+                                    <li className="flex items-center">
+                                        <Mail className="h-5 w-5 text-gray-400 mr-2 shrink-0" />
+                                        <span className="text-base text-gray-500">support@repairkaro.com</span>
+                                    </li>
+                                </ul>
                             </div>
                         </div>
-
-                        {/* Quick Links */}
-                        <div>
-                            <h3 className="text-sm font-semibold text-gray-400 tracking-wider uppercase mb-4">Platform</h3>
-                            <ul className="space-y-3">
-                                <li><Link href="/" className="text-base text-gray-500 hover:text-gray-900">Home</Link></li>
-                                <li><Link href="/services" className="text-base text-gray-500 hover:text-gray-900">Services</Link></li>
-                                <li><Link href="/book-now" className="text-base text-gray-500 hover:text-gray-900">Book Service</Link></li>
-                                <li><Link href="/my-bookings" className="text-base text-gray-500 hover:text-gray-900">My Bookings</Link></li>
-                            </ul>
-                        </div>
-
-                        {/* Company */}
-                        <div>
-                            <h3 className="text-sm font-semibold text-gray-400 tracking-wider uppercase mb-4">Company</h3>
-                            <ul className="space-y-3">
-                                <li><Link href="/about" className="text-base text-gray-500 hover:text-gray-900">About Us</Link></li>
-                                <li><Link href="/contact" className="text-base text-gray-500 hover:text-gray-900">Contact</Link></li>
-                                <li><Link href="/help" className="text-base text-gray-500 hover:text-gray-900">Help & FAQ</Link></li>
-                                <li><Link href="#" className="text-base text-gray-500 hover:text-gray-900">Privacy Policy</Link></li>
-                            </ul>
-                        </div>
-
-                        {/* Contact */}
-                        <div>
-                            <h3 className="text-sm font-semibold text-gray-400 tracking-wider uppercase mb-4">Contact</h3>
-                            <ul className="space-y-3">
-                                <li className="flex items-start">
-                                    <MapPin className="h-5 w-5 text-gray-400 mr-2 shrink-0" />
-                                    <span className="text-base text-gray-500">Sector 62, Noida, UP 201301</span>
-                                </li>
-                                <li className="flex items-center">
-                                    <Phone className="h-5 w-5 text-gray-400 mr-2 shrink-0" />
-                                    <span className="text-base text-gray-500">+91 98765 43210</span>
-                                </li>
-                                <li className="flex items-center">
-                                    <Mail className="h-5 w-5 text-gray-400 mr-2 shrink-0" />
-                                    <span className="text-base text-gray-500">support@repairkaro.com</span>
-                                </li>
-                            </ul>
+                        <div className="mt-8 border-t border-gray-200 pt-8 flex flex-col md:flex-row justify-between items-center">
+                            <p className="text-base text-gray-400">&copy; 2026 RepairKaro Inc. All rights reserved.</p>
+                            <p className="text-sm text-gray-400 mt-2 md:mt-0 flex items-center gap-1">
+                                Made with <span className="text-red-500">♥</span> in India
+                            </p>
                         </div>
                     </div>
-                    <div className="mt-8 border-t border-gray-200 pt-8 flex flex-col md:flex-row justify-between items-center">
-                        <p className="text-base text-gray-400">&copy; 2026 RepairKaro Inc. All rights reserved.</p>
-                        <p className="text-sm text-gray-400 mt-2 md:mt-0 flex items-center gap-1">
-                            Made with <span className="text-red-500">♥</span> in India
-                        </p>
-                    </div>
-                </div>
-            </footer>
+                </footer>
+            )}
 
             {/* Mobile Bottom Navigation */}
             <BottomNav userType="public" />

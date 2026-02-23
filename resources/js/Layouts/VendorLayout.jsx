@@ -1,13 +1,41 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import Sidebar from '../Components/Sidebar/Sidebar';
 import Navbar from '../Components/Navbar/Navbar';
-import { Head } from '@inertiajs/react';
+import { Head, usePage } from '@inertiajs/react';
+import { CheckCircle2, XCircle, X } from 'lucide-react';
 
 export default function VendorLayout({ children, title }) {
     const [sidebarOpen, setSidebarOpen] = useState(false);
+    const { flash } = usePage().props;
+    const [banner, setBanner] = useState({ show: false, message: '', type: 'success' });
+
+    useEffect(() => {
+        if (flash?.success) setBanner({ show: true, message: flash.success, type: 'success' });
+        if (flash?.error) setBanner({ show: true, message: flash.error, type: 'error' });
+
+        let timer;
+        if (flash?.success || flash?.error) {
+            timer = setTimeout(() => setBanner({ show: false, message: '', type: 'success' }), 3000);
+        }
+        return () => clearTimeout(timer);
+    }, [flash]);
 
     return (
-        <div className="min-h-screen bg-gray-50 flex">
+        <div className="min-h-screen bg-gray-50 flex relative">
+            {/* Global Flash Banner */}
+            {banner.show && (
+                <div className={`fixed top-4 left-1/2 -translate-x-1/2 z-[100] flex items-center gap-3 px-6 py-4 rounded-2xl shadow-2xl border backdrop-blur-md animate-fade-in-down min-w-[320px] max-w-sm w-full ${banner.type === 'success'
+                    ? 'bg-green-50/95 border-green-200 text-green-800'
+                    : 'bg-red-50/95 border-red-200 text-red-800'
+                    }`}>
+                    {banner.type === 'success' ? <CheckCircle2 className="text-green-500 shrink-0" size={24} /> : <XCircle className="text-red-500 shrink-0" size={24} />}
+                    <p className="font-semibold text-sm flex-1">{banner.message}</p>
+                    <button onClick={() => setBanner({ show: false, message: '', type: 'success' })} className="p-1 hover:bg-black/5 rounded-full transition-colors shrink-0">
+                        <X size={16} className="opacity-60" />
+                    </button>
+                </div>
+            )}
+
             {/* Mobile Sidebar Overlay */}
             {sidebarOpen && (
                 <div
@@ -17,13 +45,9 @@ export default function VendorLayout({ children, title }) {
             )}
 
             {/* Sidebar */}
-            {/* on Mobile: fixed, z-50, slide-in. on Desktop: static/sticky? Sidebar component handles 'fixed' internally on desktop. */}
-            {/* Actually Sidebar component has `fixed left-0 top-0 hidden md:flex` logic built in.
-                I need to override it for mobile to be VISIBLE when open.
-            */}
-            <div className={`fixed inset-y-0 left-0 z-50 w-64 bg-white transform transition-transform duration-300 md:translate-x-0 md:static md:inset-auto md:flex md:flex-col ${sidebarOpen ? 'translate-x-0' : '-translate-x-full'
+            <div className={`fixed inset-y-0 left-0 z-50 transform transition-transform duration-300 md:translate-x-0 md:relative md:flex md:flex-col ${sidebarOpen ? 'translate-x-0' : '-translate-x-full fixed md:static'
                 }`}>
-                <Sidebar userType="vendor" mobile={true} className="h-full border-r border-gray-200" />
+                <Sidebar userType="vendor" className="h-full border-r border-gray-200 shadow-xl md:shadow-none" />
             </div>
 
             {/* Main Content Wrapper */}

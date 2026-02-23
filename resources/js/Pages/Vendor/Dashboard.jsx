@@ -1,21 +1,17 @@
 import React from 'react';
 import VendorLayout from '../../Layouts/VendorLayout';
-import { DollarSign, users, Briefcase, TrendingUp, UserCheck, Calendar } from 'lucide-react';
-import { Link } from '@inertiajs/react';
+import { DollarSign, Users, Briefcase, TrendingUp, UserCheck, Calendar } from 'lucide-react';
+import { Link, usePage } from '@inertiajs/react';
 
 export default function Dashboard() {
-    // Mock Data
-    const stats = [
-        { label: 'Total Revenue', value: '₹45,200', change: '+12%', icon: DollarSign, color: 'bg-green-100 text-green-600' },
-        { label: 'Active Jobs', value: '24', change: '+4', icon: Briefcase, color: 'bg-blue-100 text-blue-600' },
-        { label: 'Technicians', value: '12', change: '2 Active', icon: UserCheck, color: 'bg-purple-100 text-purple-600' },
-        { label: 'Weekly Growth', value: '18%', change: '+2.4%', icon: TrendingUp, color: 'bg-orange-100 text-orange-600' },
-    ];
+    const { stats: backendStats, recentBookings } = usePage().props;
 
-    const bookings = [
-        { id: 'RK-8821', customer: 'Amit Singh', service: 'AC Repair', status: 'Pending', time: '10:30 AM' },
-        { id: 'RK-8822', customer: 'Priya Sharma', service: 'Plumbing', status: 'Assigned', time: '11:00 AM' },
-        { id: 'RK-8823', customer: 'Rahul Verma', service: 'Electrician', status: 'Completed', time: 'Yesterday' },
+    // Map dynamic stats
+    const stats = [
+        { label: 'Total Revenue', value: `₹${backendStats.revenue || 0}`, change: '', icon: DollarSign, color: 'bg-green-100 text-green-600' },
+        { label: 'Active Jobs', value: backendStats.activeJobs || 0, change: '', icon: Briefcase, color: 'bg-blue-100 text-blue-600' },
+        { label: 'Technicians', value: backendStats.techniciansCount || 0, change: '', icon: UserCheck, color: 'bg-purple-100 text-purple-600' },
+        { label: 'Total Bookings', value: backendStats.totalBookings || 0, change: '', icon: Calendar, color: 'bg-orange-100 text-orange-600' },
     ];
 
     return (
@@ -33,10 +29,8 @@ export default function Dashboard() {
                                 <stat.icon size={20} />
                             </div>
                         </div>
-                        <div className="mt-4 flex items-center text-sm font-medium text-green-600">
-                            <TrendingUp size={16} className="mr-1" />
-                            <span>{stat.change}</span>
-                            <span className="text-gray-400 font-normal ml-1">vs last month</span>
+                        <div className="mt-4 flex items-center text-sm font-medium text-gray-400">
+                            Updating live from your activity...
                         </div>
                     </div>
                 ))}
@@ -61,25 +55,29 @@ export default function Dashboard() {
                             </tr>
                         </thead>
                         <tbody>
-                            {bookings.map((booking, i) => (
+                            {recentBookings && recentBookings.length > 0 ? recentBookings.map((booking, i) => (
                                 <tr key={i} className="border-b border-gray-50 hover:bg-gray-50 transition-colors">
-                                    <td className="px-6 py-4 font-medium text-gray-900">{booking.id}</td>
-                                    <td className="px-6 py-4">{booking.customer}</td>
-                                    <td className="px-6 py-4">{booking.service}</td>
+                                    <td className="px-6 py-4 font-medium text-gray-900">{booking.booking_id || `#${booking.id}`}</td>
+                                    <td className="px-6 py-4">{booking.name || booking.user?.name || 'Customer'}</td>
+                                    <td className="px-6 py-4 text-xs">{(booking.service_ids ? JSON.parse(booking.service_ids).length : 1) + ' Services'}</td>
                                     <td className="px-6 py-4">
-                                        <span className={`px-2 py-1 rounded-full text-xs font-bold uppercase ${booking.status === 'Pending' ? 'bg-yellow-100 text-yellow-700' :
-                                                booking.status === 'Assigned' ? 'bg-blue-100 text-blue-700' :
-                                                    'bg-green-100 text-green-700'
+                                        <span className={`px-2 py-1 rounded-full text-xs font-bold uppercase ${booking.status === 'pending' ? 'bg-yellow-100 text-yellow-700' :
+                                            booking.status === 'assigned' ? 'bg-blue-100 text-blue-700' :
+                                                'bg-green-100 text-green-700'
                                             }`}>
                                             {booking.status}
                                         </span>
                                     </td>
-                                    <td className="px-6 py-4 text-gray-500">{booking.time}</td>
+                                    <td className="px-6 py-4 text-gray-500">{booking.time || booking.created_at?.substring(0, 10)}</td>
                                     <td className="px-6 py-4">
-                                        <button className="text-blue-600 font-bold hover:text-blue-800">Manage</button>
+                                        <Link href="/vendor/bookings" className="text-blue-600 font-bold hover:text-blue-800">Manage</Link>
                                     </td>
                                 </tr>
-                            ))}
+                            )) : (
+                                <tr>
+                                    <td colSpan="6" className="text-center py-6 text-gray-500">No recent bookings found.</td>
+                                </tr>
+                            )}
                         </tbody>
                     </table>
                 </div>

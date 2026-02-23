@@ -21,6 +21,13 @@ class User extends Authenticatable
         'name',
         'email',
         'password',
+        'phone',
+        'role',
+        'vendor_id',
+        'expo_push_token',
+        'status',
+        'image',
+        'rating'
     ];
 
     /**
@@ -54,5 +61,10 @@ class User extends Authenticatable
     public function bookings()
     {
         return $this->hasMany(Booking::class);
+    }
+
+    public function assignedJobs()
+    {
+        return $this->hasMany(Booking::class, 'assigned_to');
     }
 }

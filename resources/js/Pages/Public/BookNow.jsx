@@ -23,12 +23,12 @@ export default function BookNow() {
     };
 
     return (
-        <PublicLayout>
+        <PublicLayout noFooter={true} noScroll={true}>
             <Head title="Book a Service" />
 
-            <div className={`min-h-[calc(100vh-64px)] bg-gray-50 py-6 sm:py-12 px-4 sm:px-6 lg:px-8 flex items-center justify-center ${bookingComplete ? 'items-center' : 'items-start'}`}>
+            <div className={`h-full w-full bg-gray-50 flex ${bookingComplete ? 'items-center justify-center p-4' : 'items-start justify-center sm:p-6 sm:items-center'}`}>
                 {!bookingComplete ? (
-                    <div className="w-full">
+                    <div className="w-full h-full sm:h-auto sm:max-w-2xl mx-auto flex flex-col">
                         <BookingWizard services={services} addresses={userAddresses} onSubmit={handleBookingSubmit} />
                     </div>
                 ) : (

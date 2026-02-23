@@ -133,7 +133,7 @@ export default function BookingWizard({ services: categories, addresses = [], on
     const totalAmount = formData.selectedServices.reduce((sum, item) => sum + parseFloat(item.price), 0);
 
     return (
-        <div className="w-full max-w-2xl mx-auto bg-white rounded-xl shadow-md border border-gray-100 overflow-hidden flex flex-col h-[calc(100vh-130px)] md:h-auto md:min-h-[500px] relative transition-all duration-300">
+        <div className="w-full h-full sm:h-auto max-w-2xl mx-auto bg-white sm:rounded-xl shadow-sm sm:shadow-md border-0 sm:border border-gray-100 overflow-hidden flex flex-col sm:min-h-[650px] relative transition-all duration-300">
             {/* Header */}
             <div className="bg-white/90 backdrop-blur-md px-4 py-4 border-b border-gray-100 z-10 shrink-0 sticky top-0">
                 <div className="flex items-center justify-between">
@@ -172,7 +172,7 @@ export default function BookingWizard({ services: categories, addresses = [], on
             )}
 
             {/* Scrollable Content */}
-            <div className="flex-1 overflow-y-auto bg-gray-50 pb-28 md:pb-10 custom-scrollbar">
+            <div className="flex-1 overflow-y-auto bg-gray-50 pb-36 sm:pb-28 custom-scrollbar">
 
                 {/* Step 1: Select Category */}
                 {step === 1 && (
@@ -502,7 +502,7 @@ export default function BookingWizard({ services: categories, addresses = [], on
             )}
 
             {/* Fixed Bottom Footer Action Bar */}
-            <div className="fixed bottom-[60px] left-0 right-0 p-3 bg-white border-t border-gray-200 md:absolute md:bottom-0 md:border-none z-30 shadow-[0_-4px_20px_-10px_rgba(0,0,0,0.08)] md:shadow-none">
+            <div className="absolute bottom-0 left-0 right-0 p-3 bg-white border-t border-gray-200 z-30 shadow-[0_-4px_20px_-10px_rgba(0,0,0,0.08)]">
                 <div className="max-w-2xl mx-auto flex gap-2.5">
                     {step > 1 && (
                         <Button variant="outline" className="flex-[0.4] py-3 text-sm border-gray-200 text-gray-700 hover:bg-gray-50" onClick={prevStep}>

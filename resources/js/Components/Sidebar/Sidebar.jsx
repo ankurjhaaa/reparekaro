@@ -13,9 +13,13 @@ import {
     Briefcase
 } from 'lucide-react';
 
-export default function Sidebar({ userType = 'vendor', mobile = false, className = '' }) {
+export default function Sidebar({ userType = 'vendor', className = '' }) {
     const { url } = usePage();
+    const { auth } = usePage().props;
     const [collapsed, setCollapsed] = useState(false);
+
+    const userName = auth?.user?.name || 'User';
+    const initias = userName.charAt(0).toUpperCase();
 
     const menus = {
         vendor: [
@@ -45,8 +49,7 @@ export default function Sidebar({ userType = 'vendor', mobile = false, className
 
     return (
         <div
-            className={`bg-[var(--sidebar)] border-r border-gray-200 h-screen transition-all duration-300 z-30 flex flex-col ${mobile ? 'relative w-full flex' : `fixed left-0 top-0 hidden md:flex ${collapsed ? 'w-20' : 'w-64'}`
-                } ${className}`}
+            className={`bg-white border-r border-gray-200 h-screen transition-all duration-300 z-30 flex flex-col relative ${collapsed ? 'w-20' : 'w-64'} ${className}`}
         >
             {/* Logo Area */}
             <div className="h-16 flex items-center justify-center border-b border-gray-100">
@@ -71,7 +74,7 @@ export default function Sidebar({ userType = 'vendor', mobile = false, className
                                         }`}
                                 >
                                     <item.icon className={`w-5 h-5 ${isActive ? 'text-white' : 'text-gray-500 group-hover:text-gray-700'}`} />
-                                    <span className={`font-medium transition-all ${collapsed ? 'hidden' : 'block'}`}>
+                                    <span className={`font-medium whitespace-nowrap transition-all duration-300 ${collapsed ? 'opacity-0 w-0 overflow-hidden' : 'opacity-100 w-auto'}`}>
                                         {item.name}
                                     </span>
 
@@ -89,25 +92,30 @@ export default function Sidebar({ userType = 'vendor', mobile = false, className
             </nav>
 
             {/* Footer / User Profile */}
-            <div className="p-4 border-t border-gray-100">
-                <button className="flex items-center gap-3 w-full p-2 rounded-lg hover:bg-gray-50 transition-colors text-left">
-                    <div className="w-8 h-8 rounded-full bg-gray-200 flex items-center justify-center text-xs font-bold text-gray-600">
-                        {collapsed ? 'U' : 'User'}
-                    </div>
-                    {!collapsed && (
-                        <div className="flex-1 min-w-0">
-                            <p className="text-sm font-medium text-gray-900 truncate">John Doe</p>
-                            <p className="text-xs text-gray-500 truncate">{userType}</p>
+            <div className="p-4 border-t border-gray-100 mb-2">
+                <Link
+                    href="/logout"
+                    method="post"
+                    as="button"
+                    className="flex items-center justify-between w-full p-2 rounded-xl hover:bg-red-50 transition-colors group text-left"
+                >
+                    <div className="flex items-center gap-3 overflow-hidden">
+                        <div className="w-10 h-10 rounded-full bg-gray-100 flex items-center justify-center font-bold text-gray-700 group-hover:bg-red-100 group-hover:text-red-600 transition-colors shrink-0 shadow-sm border border-gray-200 group-hover:border-red-200">
+                            {collapsed ? <LogOut size={18} /> : initias}
                         </div>
-                    )}
-                    {!collapsed && <LogOut className="w-4 h-4 text-gray-400" />}
-                </button>
+                        <div className={`flex-1 min-w-0 transition-opacity duration-300 ${collapsed ? 'opacity-0 w-0' : 'opacity-100 w-full'}`}>
+                            <p className="text-sm font-bold text-gray-900 truncate group-hover:text-red-700">{userName}</p>
+                            <p className="text-xs text-gray-500 truncate group-hover:text-red-500 font-medium">Logout User</p>
+                        </div>
+                    </div>
+                    {!collapsed && <LogOut className="w-5 h-5 text-gray-400 group-hover:text-red-500 shrink-0 transform group-hover:translate-x-1 transition-all" />}
+                </Link>
             </div>
 
             {/* Collapse Toggle */}
             <button
                 onClick={() => setCollapsed(!collapsed)}
-                className="absolute -right-3 top-20 bg-white border border-gray-200 rounded-full p-1 shadow-sm text-gray-500 hover:text-gray-900"
+                className="absolute -right-3 top-20 bg-white border border-gray-200 rounded-full p-1 shadow-sm text-gray-500 hover:text-gray-900 hover:bg-gray-50 z-50 transition-colors"
             >
                 {collapsed ? <ChevronRight size={14} /> : <ChevronLeft size={14} />}
             </button>

@@ -20,6 +20,7 @@ return new class extends Migration
             $table->string('password');
             $table->string('expo_push_token')->nullable();
             $table->enum('role',['user','superadmin','technician','vendor'])->default('user');
+            $table->foreignId('vendor_id')->nullable()->constrained('users')->onDelete('cascade');
             $table->rememberToken();
             $table->timestamps();
         });

@@ -63,10 +63,26 @@ Route::controller(TechnicianController::class)->middleware(['auth', 'role:techni
 Route::controller(VendorController::class)->middleware(['auth', 'role:vendor'])->prefix('vendor')->group(function () {
     Route::get('/dashboard', 'dashboard')->name('vendor.dashboard');
     Route::get('/technicians', 'technicians')->name('vendor.technicians');
+    Route::post('/technicians', 'storeTechnician')->name('vendor.technicians.store');
+    Route::put('/technicians/{id}', 'updateTechnician')->name('vendor.technicians.update');
+    Route::delete('/technicians/{id}', 'destroyTechnician')->name('vendor.technicians.destroy');
+    Route::get('/customers', 'customers')->name('vendor.customers');
     Route::get('/bookings', 'bookings')->name('vendor.bookings');
-    Route::get('/services', 'services')->name('vendor.services');
+    Route::post('/bookings/{id}/assign', 'assignBooking')->name('vendor.bookings.assign');
+    Route::put('/bookings/{id}/status', 'updateBookingStatus')->name('vendor.bookings.status');
     Route::get('/reports', 'reports')->name('vendor.reports');
     Route::get('/settings', 'settings')->name('vendor.settings');
+
+    // Services CRUD
+    Route::get('/services', 'services')->name('vendor.services');
+    Route::post('/services', 'storeService')->name('vendor.services.store');
+    Route::put('/services/{id}', 'updateService')->name('vendor.services.update');
+    Route::delete('/services/{id}', 'destroyService')->name('vendor.services.destroy');
+
+    // Service Rates CRUD
+    Route::post('/service-rates', 'storeServiceRate')->name('vendor.service-rates.store');
+    Route::put('/service-rates/{id}', 'updateServiceRate')->name('vendor.service-rates.update');
+    Route::delete('/service-rates/{id}', 'destroyServiceRate')->name('vendor.service-rates.destroy');
 });
 
 Route::controller(AuthController::class)->group(function () {
@@ -85,27 +101,7 @@ Route::controller(AuthController::class)->group(function () {
 //     return Inertia::render('Auth/Signup');
 // })->name('signup');
 
-// Vendor Routes
-Route::prefix('vendor')->group(function () {
-    Route::get('/dashboard', function () {
-        return Inertia::render('Vendor/Dashboard');
-    })->name('vendor.dashboard');
-    Route::get('/bookings', function () {
-        return Inertia::render('Vendor/Bookings');
-    })->name('vendor.bookings');
-    Route::get('/technicians', function () {
-        return Inertia::render('Vendor/Technicians');
-    })->name('vendor.technicians');
-    Route::get('/services', function () {
-        return Inertia::render('Vendor/Services');
-    })->name('vendor.services');
-    Route::get('/customers', function () {
-        return Inertia::render('Vendor/Customers');
-    })->name('vendor.customers');
-    Route::get('/reports', function () {
-        return Inertia::render('Vendor/Reports');
-    })->name('vendor.reports');
-});
+// Vendor Routes Deprecated block removed
 
 // SuperAdmin Routes
 Route::prefix('superadmin')->group(function () {
