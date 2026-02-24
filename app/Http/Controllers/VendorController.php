@@ -22,6 +22,14 @@ class VendorController extends Controller
             ->take(5)
             ->get();
 
+        $revenueChart = \App\Models\Booking::where('vendor_id', $vendorId)
+            ->where('status', 'completed')
+            ->where('created_at', '>=', now()->subDays(7))
+            ->selectRaw('DATE(created_at) as date, SUM(total_amount) as total')
+            ->groupByRaw('DATE(created_at)')
+            ->orderBy('date')
+            ->get();
+
         return Inertia::render('Vendor/Dashboard', [
             'stats' => [
                 'totalBookings' => $bookingsCount,
@@ -29,6 +37,7 @@ class VendorController extends Controller
                 'techniciansCount' => $techniciansCount,
                 'revenue' => $revenue
             ],
+            'revenueChart' => $revenueChart,
             'recentBookings' => $recentBookings
         ]);
     }
@@ -291,10 +300,67 @@ class VendorController extends Controller
 
     public function reports()
     {
-        return Inertia::render('Vendor/Reports');
+        $vendorId = auth()->id();
+
+        $totalRevenue = \App\Models\Booking::where('vendor_id', $vendorId)->where('status', 'completed')->sum('total_amount');
+        $totalBookings = \App\Models\Booking::where('vendor_id', $vendorId)->count();
+        $completedBookings = \App\Models\Booking::where('vendor_id', $vendorId)->where('status', 'completed')->count();
+        $cancelledBookings = \App\Models\Booking::where('vendor_id', $vendorId)->where('status', 'cancelled')->count();
+
+        // Top Technicians
+        $topTechnicians = \App\Models\User::where('role', 'technician')
+            ->where('vendor_id', $vendorId)
+            ->withCount([
+                'assignedJobs as completed_jobs' => function ($query) {
+                    $query->where('status', 'completed');
+                }
+            ])
+            ->orderByDesc('completed_jobs')
+            ->take(5)
+            ->get();
+
+        return Inertia::render('Vendor/Reports', [
+            'stats' => [
+                'totalRevenue' => $totalRevenue,
+                'totalBookings' => $totalBookings,
+                'completedBookings' => $completedBookings,
+                'cancelledBookings' => $cancelledBookings,
+            ],
+            'topTechnicians' => $topTechnicians,
+        ]);
     }
+
     public function settings()
     {
-        return Inertia::render('Vendor/Settings');
+        return Inertia::render('Vendor/Settings', [
+            'user' => auth()->user()
+        ]);
+    }
+
+    public function updateSettings(Request $request)
+    {
+        $user = auth()->user();
+
+        $request->validate([
+            'name' => 'required|string|max:255',
+            'email' => 'required|email|unique:users,email,' . $user->id,
+            'phone' => 'nullable|string|max:20',
+        ]);
+
+        $user->update($request->only('name', 'email', 'phone'));
+
+        return back()->with('success', 'Profile updated successfully.');
+    }
+
+    public function updatePassword(Request $request)
+    {
+        $request->validate([
+            'current_password' => 'required|current_password',
+            'password' => 'required|min:8|confirmed',
+        ]);
+
+        auth()->user()->update(['password' => bcrypt($request->password)]);
+
+        return back()->with('success', 'Password updated successfully.');
     }
 }

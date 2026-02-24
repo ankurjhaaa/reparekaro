@@ -28,7 +28,9 @@ export default function Support() {
                                 <p className="text-xs text-gray-500">Available 9 AM - 9 PM</p>
                             </div>
                         </div>
-                        <Button className="bg-(--primary) hover:bg-blue-700 shadow-lg px-6">Call Now</Button>
+                        <a href="tel:+18001234567" className="bg-(--primary) text-white hover:bg-blue-700 shadow-lg px-6 py-2.5 rounded-xl font-bold text-sm transition-colors text-center">
+                            Call Now
+                        </a>
                     </div>
 
                     <div className="bg-green-50 p-6 rounded-2xl flex items-center justify-between shadow-sm border border-green-100">
@@ -41,7 +43,9 @@ export default function Support() {
                                 <p className="text-xs text-gray-500">Instant resolution</p>
                             </div>
                         </div>
-                        <Button className="bg-green-600 hover:bg-green-700 shadow-lg px-6">Start Chat</Button>
+                        <Link href="/technician/chat/support" className="bg-green-600 text-white hover:bg-green-700 shadow-lg px-6 py-2.5 rounded-xl font-bold text-sm transition-colors text-center">
+                            Start Chat
+                        </Link>
                     </div>
                 </div>
 

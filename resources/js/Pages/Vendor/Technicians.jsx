@@ -69,25 +69,25 @@ export default function Technicians() {
     return (
         <VendorLayout title="Technicians">
             {/* Header / Actions */}
-            <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-6">
+            <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 sm:gap-4 mb-4 sm:mb-6">
                 <div>
-                    <h1 className="text-2xl font-bold text-gray-900">Technicians</h1>
-                    <p className="text-sm text-gray-500">Manage your team and assignments</p>
+                    <h1 className="text-xl sm:text-2xl font-bold text-gray-900">Technicians</h1>
+                    <p className="text-[10px] sm:text-xs text-gray-500 mt-0.5">Manage your team and assignments</p>
                 </div>
-                <Button onClick={openCreateModal} className="flex items-center gap-2 bg-(--primary) text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition">
-                    <Plus size={18} />
+                <Button onClick={openCreateModal} className="flex items-center gap-1.5 sm:gap-2 bg-(--primary) text-white px-3 py-1.5 sm:px-4 sm:py-2 text-[10px] sm:text-xs rounded-lg hover:bg-blue-700 transition">
+                    <Plus size={16} className="sm:w-4 sm:h-4" />
                     Add Technician
                 </Button>
             </div>
 
             {/* Search / Filter */}
-            <div className="bg-white p-4 rounded-xl shadow-sm border border-gray-100 mb-6 flex gap-3">
+            <div className="bg-white p-3 sm:p-4 rounded-xl shadow-sm border border-gray-100 mb-4 sm:mb-6 flex gap-3">
                 <form onSubmit={handleSearch} className="relative flex-1">
-                    <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" size={20} />
+                    <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 h-4 w-4 sm:h-5 sm:w-5" />
                     <input
                         type="text"
                         placeholder="Search technicians by name, email, or phone (Press Enter)..."
-                        className="w-full pl-10 pr-4 py-2 rounded-lg border border-gray-200 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all"
+                        className="w-full pl-9 sm:pl-10 pr-4 py-1.5 sm:py-2 text-xs sm:text-sm rounded-lg border border-gray-200 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all"
                         value={searchTerm}
                         onChange={(e) => setSearchTerm(e.target.value)}
                     />
@@ -95,73 +95,80 @@ export default function Technicians() {
             </div>
 
             {/* Technicians Grid */}
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 sm:gap-6">
                 {technicians && technicians.length > 0 ? technicians.map((tech) => (
-                    <div key={tech.id} className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden group hover:shadow-md transition-all duration-300">
-                        <div className="p-6 relative group/actions">
-                            <div className="absolute top-4 right-4 flex gap-2 opacity-0 group-hover/actions:opacity-100 transition-opacity">
-                                <button onClick={() => openEditModal(tech)} className="text-gray-400 hover:text-blue-600 bg-gray-50 hover:bg-blue-50 p-1.5 rounded-md transition-colors">
-                                    <span className="text-xs font-semibold">Edit</span>
+                    <div key={tech.id} className="bg-white rounded-xl sm:rounded-2xl shadow-[0_2px_10px_rgb(0,0,0,0.03)] border border-gray-100 overflow-hidden group hover:shadow-[0_4px_15px_rgb(0,0,0,0.05)] hover:-translate-y-1 transition-all duration-300 relative flex flex-col h-full">
+                        <div className="absolute top-0 right-0 w-20 h-20 bg-gradient-to-br from-blue-50 to-transparent rounded-bl-full pointer-events-none"></div>
+                        <div className="p-4 sm:p-5 relative group/actions flex-1 flex flex-col">
+                            <div className="absolute top-2 right-2 flex gap-1.5 opacity-0 group-hover/actions:opacity-100 transition-opacity z-10">
+                                <button onClick={() => openEditModal(tech)} className="text-gray-400 hover:text-(--primary) bg-white shadow hover:bg-blue-50 p-1.5 rounded-md transition-colors border border-gray-100">
+                                    <span className="text-[10px] font-bold leading-none">Edit</span>
                                 </button>
-                                <button onClick={() => handleDelete(tech.id)} className="text-gray-400 hover:text-red-600 bg-gray-50 hover:bg-red-50 p-1.5 rounded-md transition-colors">
-                                    <X size={16} />
+                                <button onClick={() => handleDelete(tech.id)} className="text-gray-400 hover:text-red-600 bg-white shadow hover:bg-red-50 p-1.5 rounded-md transition-colors border border-gray-100">
+                                    <X size={12} strokeWidth={3} />
                                 </button>
                             </div>
 
-                            <div className="flex flex-col items-center text-center">
-                                <div className="w-24 h-24 rounded-full p-1 border-2 border-gray-100 mb-4 relative">
-                                    <img src={tech.image || 'https://ui-avatars.com/api/?name=' + tech.name} alt={tech.name} className="w-full h-full rounded-full object-cover" />
-                                    <span className={`absolute bottom-1 right-1 w-4 h-4 rounded-full border-2 border-white ${tech.status === 'Active' ? 'bg-green-500' : 'bg-green-500'
+                            <div className="flex flex-col items-center text-center relative z-10">
+                                <div className="w-16 h-16 sm:w-20 sm:h-20 rounded-full p-1 bg-gradient-to-br from-(--primary) to-purple-500 mb-3 relative shadow-sm">
+                                    <img src={tech.image || 'https://ui-avatars.com/api/?name=' + tech.name + '&background=random'} alt={tech.name} className="w-full h-full rounded-full object-cover border-2 sm:border-4 border-white" />
+                                    <span className={`absolute bottom-0 right-0 w-4 h-4 rounded-full border-2 border-white shadow-sm ${tech.status === 'Active' ? 'bg-emerald-500' : 'bg-red-500'
                                         }`}></span>
                                 </div>
 
-                                <h3 className="text-lg font-bold text-gray-900">{tech.name}</h3>
-                                <p className="text-sm text-gray-500 mb-2">{tech.email}</p>
+                                <h3 className="text-base sm:text-lg font-bold text-gray-900 w-full truncate">{tech.name}</h3>
+                                <p className="text-[10px] sm:text-xs text-gray-500 mb-2 w-full truncate">{tech.email}</p>
 
-                                <div className="flex items-center gap-1 bg-yellow-50 text-yellow-700 px-2 py-0.5 rounded-md text-xs font-bold mb-4">
-                                    <Star size={12} className="fill-current" /> {tech.rating} Rating
+                                <div className="flex items-center gap-1 bg-amber-50 text-amber-700 px-2 py-0.5 sm:px-3 sm:py-1 rounded-full text-[9px] sm:text-[10px] font-bold mb-3 shadow-sm border border-amber-100/50">
+                                    <Star size={10} className="fill-current sm:w-3 sm:h-3" /> {tech.rating || '5.0'} Rating
                                 </div>
 
-                                <div className="w-full grid grid-cols-2 gap-2 border-t border-gray-100 pt-4 mt-2">
+                                <div className="w-full grid grid-cols-2 gap-2 mt-auto pt-3 border-t border-dashed border-gray-200">
                                     <div className="text-center">
-                                        <p className="text-lg font-bold text-gray-900">{tech.jobs || 0}</p>
-                                        <p className="text-xs text-gray-500 uppercase tracking-wider">Jobs</p>
+                                        <p className="text-lg sm:text-xl font-black text-gray-900">{tech.jobs || 0}</p>
+                                        <p className="text-[9px] sm:text-[10px] text-gray-500 font-bold uppercase tracking-wider">Jobs</p>
                                     </div>
-                                    <div className="text-center border-l border-gray-100">
-                                        <p className="text-lg font-bold text-green-600">{tech.phone || 'N/A'}</p>
-                                        <p className="text-xs text-gray-500 uppercase tracking-wider">Phone</p>
+                                    <div className="text-center border-l border-dashed border-gray-200">
+                                        <p className="text-xs sm:text-sm mt-0.5 sm:mt-1 font-bold text-blue-600 truncate px-1">{tech.phone || 'N/A'}</p>
+                                        <p className="text-[9px] sm:text-[10px] text-gray-500 font-bold uppercase tracking-wider mt-0.5">Phone</p>
                                     </div>
                                 </div>
                             </div>
                         </div>
 
-                        <div className="bg-gray-50 px-6 py-3 border-t border-gray-100 flex justify-between items-center">
-                            <span className={`text-xs font-bold px-2 py-1 rounded uppercase ${tech.status === 'Active' ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700'}`}>
+                        <div className="bg-gray-50/80 backdrop-blur-sm px-4 sm:px-5 py-3 border-t border-gray-100 flex justify-between items-center mt-auto">
+                            <span className={`text-[9px] sm:text-[10px] font-black px-1.5 sm:px-2 py-0.5 sm:py-1 rounded-md tracking-wider uppercase ${tech.status === 'Active' ? 'bg-emerald-100 text-emerald-700 border border-emerald-200/50' : 'bg-red-100 text-red-700 border border-red-200/50'}`}>
                                 {tech.status || 'Active'}
                             </span>
-                            <button onClick={() => setViewingTech(tech)} className="text-sm font-semibold text-blue-600 hover:text-blue-800">View Profile</button>
+                            <button onClick={() => setViewingTech(tech)} className="text-xs sm:text-sm font-semibold text-blue-600 hover:text-blue-800">View Profile</button>
                         </div>
                     </div>
                 )) : (
-                    <div className="col-span-full py-16 text-center bg-white rounded-xl shadow-sm border border-gray-100">
-                        <Users size={48} className="mx-auto text-gray-300 mb-4" />
-                        <h3 className="text-lg font-bold text-gray-900">No Technicians</h3>
-                        <p className="text-gray-500 mt-1">Add your first technician to start assigning jobs.</p>
+                    <div className="col-span-full py-20 text-center bg-white/50 backdrop-blur-sm rounded-3xl border border-dashed border-gray-200">
+                        <div className="w-20 h-20 bg-gray-50 rounded-full flex items-center justify-center mx-auto mb-4 border border-gray-100">
+                            <Users size={32} className="text-gray-400" />
+                        </div>
+                        <h3 className="text-xl font-bold text-gray-900">No Technicians Found</h3>
+                        <p className="text-gray-500 mt-1 max-w-sm mx-auto">You don't have any matching technicians. Add your first team member to start assigning jobs.</p>
                     </div>
                 )}
             </div>
 
-            {/* Add Technician Modal */}
+            {/* Add/Edit Technician Modal */}
             {isModalOpen && (
-                <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-gray-900/50 backdrop-blur-sm animate-fade-in">
-                    <div className="bg-white rounded-2xl shadow-xl w-full max-w-md overflow-hidden animate-slide-up">
-                        <div className="flex justify-between items-center p-5 border-b border-gray-100 sticky top-0 bg-white z-10">
-                            <h2 className="text-xl font-bold text-gray-900">{editingTech ? 'Edit Technician' : 'Add Technician'}</h2>
-                            <button onClick={() => setIsModalOpen(false)} className="p-2 text-gray-400 hover:text-gray-600 rounded-full hover:bg-gray-100 transition-colors">
-                                <X size={20} />
+                <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-gray-900/60 backdrop-blur-md animate-fade-in">
+                    <div className="bg-white rounded-3xl shadow-2xl w-full max-w-md overflow-hidden transform scale-95 sm:scale-100 animate-slide-up relative">
+                        {/* Decorative Background */}
+                        <div className="absolute top-0 left-0 right-0 h-32 bg-gradient-to-br from-blue-600 to-indigo-700 pointer-events-none z-0"></div>
+
+                        <div className="flex justify-between items-center p-6 relative z-10 text-white">
+                            <h2 className="text-2xl font-black">{editingTech ? 'Edit Technician' : 'Add Technician'}</h2>
+                            <button onClick={() => setIsModalOpen(false)} className="p-2 text-white/70 hover:text-white rounded-full hover:bg-white/10 transition-colors backdrop-blur-sm">
+                                <X size={24} strokeWidth={3} />
                             </button>
                         </div>
-                        <form onSubmit={submit} className="p-5 space-y-4">
+
+                        <form onSubmit={submit} className="p-6 space-y-5 relative z-10 bg-white rounded-t-3xl -mt-4 shadow-[0_-8px_30px_rgb(0,0,0,0.12)]">
                             <div>
                                 <label className="block text-sm font-semibold text-gray-700 mb-1">Full Name *</label>
                                 <input

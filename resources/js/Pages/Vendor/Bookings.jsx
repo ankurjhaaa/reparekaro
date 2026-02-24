@@ -43,14 +43,14 @@ export default function Bookings() {
 
     return (
         <VendorLayout title="Bookings">
-            <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-6">
-                <h1 className="text-2xl font-bold text-gray-900">Bookings</h1>
+            <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 sm:gap-4 mb-4 sm:mb-6">
+                <h1 className="text-xl sm:text-2xl font-bold text-gray-900">Bookings</h1>
                 <div className="flex gap-2">
-                    <Button variant="outline" className="flex items-center gap-2">
-                        <Filter size={16} /> Filter
+                    <Button variant="outline" className="flex items-center gap-1.5 sm:gap-2 text-[10px] sm:text-xs px-3 py-1.5 sm:px-4 sm:py-2">
+                        <Filter size={14} className="sm:w-4 sm:h-4" /> Filter
                     </Button>
-                    <Button className="bg-(--primary) text-white flex items-center gap-2">
-                        <Calendar size={16} /> New Booking
+                    <Button className="bg-(--primary) text-white flex items-center gap-1.5 sm:gap-2 text-[10px] sm:text-xs px-3 py-1.5 sm:px-4 sm:py-2">
+                        <Calendar size={14} className="sm:w-4 sm:h-4" /> New Booking
                     </Button>
                 </div>
             </div>
@@ -72,25 +72,25 @@ export default function Bookings() {
             </div>
 
             {/* Booking List */}
-            <div className="space-y-4">
+            <div className="space-y-3 sm:space-y-4">
                 {filteredBookings && filteredBookings.length > 0 ? filteredBookings.map((booking) => {
                     if (!booking) return null;
                     return (
-                        <div key={booking.id || Math.random()} className="bg-white p-4 rounded-xl shadow-sm border border-gray-100 hover:shadow-md transition-shadow relative">
+                        <div key={booking.id || Math.random()} className="bg-white p-3 sm:p-4 rounded-xl shadow-sm border border-gray-100 hover:shadow-md transition-shadow relative">
                             <div className="flex justify-between items-start mb-2">
-                                <div className="flex items-center gap-3">
-                                    <div className={`w-10 h-10 rounded-lg flex items-center justify-center font-bold text-lg ${booking.status === 'pending' ? 'bg-yellow-50 text-yellow-600' :
+                                <div className="flex items-center gap-2.5 sm:gap-3">
+                                    <div className={`w-8 h-8 sm:w-10 sm:h-10 rounded-lg flex items-center justify-center font-bold text-base sm:text-lg ${booking.status === 'pending' ? 'bg-yellow-50 text-yellow-600' :
                                         booking.status === 'assigned' ? 'bg-blue-50 text-blue-600' :
                                             'bg-green-50 text-green-600'
                                         }`}>
                                         {booking.name ? booking.name.charAt(0).toUpperCase() : 'S'}
                                     </div>
                                     <div>
-                                        <h3 className="font-bold text-gray-900">{booking.booking_id || `#${booking?.id}`}</h3>
-                                        <p className="text-xs text-gray-500 font-mono">{(booking.service_ids ? JSON.parse(booking.service_ids).length : 1)} Service(s)</p>
+                                        <h3 className="font-bold text-gray-900 text-sm sm:text-base">{booking.booking_id || `#${booking?.id}`}</h3>
+                                        <p className="text-[10px] sm:text-xs text-gray-500 font-mono">{(booking.service_ids ? JSON.parse(booking.service_ids).length : 1)} Service(s)</p>
                                     </div>
                                 </div>
-                                <span className={`px-2 py-1 rounded text-[10px] font-bold uppercase tracking-wider ${booking.status === 'pending' ? 'bg-yellow-100 text-yellow-700' :
+                                <span className={`px-1.5 sm:px-2 py-0.5 sm:py-1 rounded text-[9px] sm:text-[10px] font-bold uppercase tracking-wider ${booking.status === 'pending' ? 'bg-yellow-100 text-yellow-700' :
                                     booking.status === 'assigned' ? 'bg-blue-100 text-blue-700' :
                                         'bg-green-100 text-green-700'
                                     }`}>
@@ -98,16 +98,16 @@ export default function Bookings() {
                                 </span>
                             </div>
 
-                            <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 mt-3 text-sm text-gray-600">
-                                <div className="flex items-center gap-2">
+                            <div className="grid grid-cols-1 sm:grid-cols-2 gap-1.5 sm:gap-2 mt-2 sm:mt-3 text-xs sm:text-sm text-gray-600">
+                                <div className="flex items-center gap-1.5 sm:gap-2">
                                     <User size={14} className="text-gray-400 shrink-0" />
                                     <span className="font-medium text-gray-900 truncate">{booking.name || booking.user?.name || 'Customer'}</span>
                                 </div>
-                                <div className="flex items-center gap-2">
+                                <div className="flex items-center gap-1.5 sm:gap-2">
                                     <Clock size={14} className="text-gray-400 shrink-0" />
                                     <span>{booking.date ? new Date(booking.date).toLocaleDateString() : booking.created_at?.substring(0, 10)} {booking.time}</span>
                                 </div>
-                                <div className="flex items-center gap-2 sm:col-span-2">
+                                <div className="flex items-center gap-1.5 sm:gap-2 sm:col-span-2">
                                     <MapPin size={14} className="text-gray-400 shrink-0" />
                                     <span className="truncate">{booking.address || 'Address not provided'} {booking.city ? `, ${booking.city}` : ''}</span>
                                 </div>

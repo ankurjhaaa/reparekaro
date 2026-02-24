@@ -45,7 +45,7 @@ export default function VendorLayout({ children, title }) {
             )}
 
             {/* Sidebar */}
-            <div className={`fixed inset-y-0 left-0 z-50 transform transition-transform duration-300 md:translate-x-0 md:relative md:flex md:flex-col ${sidebarOpen ? 'translate-x-0' : '-translate-x-full fixed md:static'
+            <div className={`fixed inset-y-0 left-0 z-50 transform transition-transform duration-300 md:translate-x-0 md:sticky md:top-0 md:flex md:flex-col h-screen bg-white ${sidebarOpen ? 'translate-x-0' : '-translate-x-full fixed md:sticky'
                 }`}>
                 <Sidebar userType="vendor" className="h-full border-r border-gray-200 shadow-xl md:shadow-none" />
             </div>
@@ -53,16 +53,18 @@ export default function VendorLayout({ children, title }) {
             {/* Main Content Wrapper */}
             <div className="flex-1 flex flex-col min-w-0 transition-all duration-300">
                 {/* Navbar */}
-                <Navbar
-                    userType="Vendor"
-                    onMenuClick={() => setSidebarOpen(true)}
-                    showMenuButton={true} // Visible on mobile
-                />
+                <div className="sticky top-0 z-40 bg-gray-50/80 backdrop-blur-md">
+                    <Navbar
+                        userType="Vendor"
+                        onMenuClick={() => setSidebarOpen(true)}
+                        showMenuButton={true} // Visible on mobile
+                    />
+                </div>
 
                 {/* Content */}
-                <main className="flex-1 p-4 sm:p-6 lg:p-8 overflow-y-auto">
+                <main className="flex-1 p-3 sm:p-4 lg:p-6 w-full">
                     {title && <Head title={title} />}
-                    <div className="max-w-7xl mx-auto">
+                    <div className="max-w-7xl mx-auto w-full relative">
                         {children}
                     </div>
                 </main>

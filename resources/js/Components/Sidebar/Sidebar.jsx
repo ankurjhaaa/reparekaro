@@ -10,7 +10,10 @@ import {
     ChevronLeft,
     ChevronRight,
     Wrench,
-    Briefcase
+    Briefcase,
+    Wallet,
+    Star,
+    LifeBuoy
 } from 'lucide-react';
 
 export default function Sidebar({ userType = 'vendor', className = '' }) {
@@ -41,7 +44,12 @@ export default function Sidebar({ userType = 'vendor', className = '' }) {
         technician: [
             { name: 'Dashboard', icon: LayoutDashboard, href: '/technician/dashboard' },
             { name: 'My Jobs', icon: Briefcase, href: '/technician/jobs' },
+            { name: 'Wallet', icon: Wallet, href: '/technician/wallet' },
+            { name: 'Reviews', icon: Star, href: '/technician/reviews' },
+            { name: 'Documents', icon: FileText, href: '/technician/documents' },
             { name: 'Profile', icon: Users, href: '/technician/profile' },
+            { name: 'Settings', icon: Settings, href: '/technician/settings' },
+            { name: 'Support', icon: LifeBuoy, href: '/technician/support' },
         ]
     };
 
@@ -115,7 +123,7 @@ export default function Sidebar({ userType = 'vendor', className = '' }) {
             {/* Collapse Toggle */}
             <button
                 onClick={() => setCollapsed(!collapsed)}
-                className="absolute -right-3 top-20 bg-white border border-gray-200 rounded-full p-1 shadow-sm text-gray-500 hover:text-gray-900 hover:bg-gray-50 z-50 transition-colors"
+                className="hidden md:flex absolute -right-3 top-20 bg-white border border-gray-200 rounded-full p-1 shadow-sm text-gray-500 hover:text-gray-900 hover:bg-gray-50 z-50 transition-colors items-center justify-center"
             >
                 {collapsed ? <ChevronRight size={14} /> : <ChevronLeft size={14} />}
             </button>
