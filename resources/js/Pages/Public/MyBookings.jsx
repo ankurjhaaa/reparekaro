@@ -39,7 +39,7 @@ export default function MyBookings() {
         <PublicLayout noFooter={true} noScroll={true}>
             <Head title="My Bookings" />
 
-            <div className="bg-gray-50 h-[calc(100vh-64px)] overflow-y-auto pb-24 md:pb-8 pt-6 sm:pt-8 w-full block">
+            <div className="bg-gray-50 h-[calc(100vh-64px)] overflow-y-auto md:pb-8 pt-6 sm:pt-8 w-full block">
                 <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                     {/* Page Header - Desktop: Left aligned, Mobile: Centered */}
                     <div className="flex flex-col md:flex-row md:items-center justify-between mb-8 gap-4">
@@ -47,11 +47,7 @@ export default function MyBookings() {
                             <h1 className="text-2xl font-bold text-gray-900">My Bookings</h1>
                             <p className="text-sm text-gray-500 mt-1">Manage your upcoming and past service requests</p>
                         </div>
-                        <div className="flex gap-2">
-                            <Link href="/book-now">
-                                <Button className="w-full md:w-auto shadow-md">Book New Service</Button>
-                            </Link>
-                        </div>
+                        
                     </div>
 
                     {/* Tabs */}

@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import PublicLayout from '../../Layouts/PublicLayout';
-import { Head, usePage, router } from '@inertiajs/react';
+import { Head, usePage, router, Link } from '@inertiajs/react';
 import Button from '../../Components/Forms/Button';
 import BookingWizard from '../../Components/Booking/BookingWizard';
 import { Droplet, Wrench, Zap, Speaker, Hammer, PenTool, Check } from 'lucide-react';
@@ -21,6 +21,8 @@ export default function BookNow() {
             preserveScroll: true
         });
     };
+
+    const bookingId = flash?.success?.split('ID: ')[1] || 'RK-' + Math.floor(100000 + Math.random() * 900000);
 
     return (
         <PublicLayout noFooter={true} noScroll={true}>
@@ -55,7 +57,7 @@ export default function BookNow() {
                         {/* Booking Details Card */}
                         <div className="w-full bg-gray-50/80 px-4 py-3.5 rounded-2xl border border-gray-100 mb-8 relative z-10 flex items-center justify-between">
                             <span className="text-[10px] sm:text-xs font-bold text-gray-400 uppercase tracking-widest leading-none">Booking ID</span>
-                            <span className="font-black text-gray-900 tracking-wide text-base sm:text-lg leading-none text-(--primary)">#RK-{Math.floor(100000 + Math.random() * 900000)}</span>
+                            <span className="font-black text-gray-900 tracking-wide text-base sm:text-lg leading-none text-(--primary)">#{bookingId}</span>
                         </div>
 
                         {/* Action Buttons */}
@@ -63,9 +65,9 @@ export default function BookNow() {
                             <Button onClick={() => setBookingComplete(false)} className="w-full justify-center py-3.5 sm:py-4 rounded-xl text-sm font-bold tracking-wide transition-all shadow-md shadow-blue-500/20 active:scale-[0.98]">
                                 Book Another Service
                             </Button>
-                            <a href="/" className="w-full flex items-center justify-center py-3.5 sm:py-4 rounded-xl text-sm font-bold text-gray-600 bg-white border border-gray-200 hover:bg-gray-50 hover:text-gray-900 transition-colors active:scale-[0.98]">
+                            <Link href="/" className="w-full flex items-center justify-center py-3.5 sm:py-4 rounded-xl text-sm font-bold text-gray-600 bg-white border border-gray-200 hover:bg-gray-50 hover:text-gray-900 transition-colors active:scale-[0.98]">
                                 Return to Home
-                            </a>
+                            </Link>
                         </div>
                     </div>
                 )}

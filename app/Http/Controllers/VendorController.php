@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use Inertia\Inertia;
+use Carbon\Carbon;
 
 class VendorController extends Controller
 {
@@ -123,12 +124,35 @@ class VendorController extends Controller
 
         return back()->with('success', 'Technician removed successfully.');
     }
-    public function bookings()
+    public function bookings(Request $request)
     {
-        $bookings = \App\Models\Booking::with(['user', 'assignedTo'])
-            ->where('vendor_id', auth()->id())
-            ->latest()
-            ->get();
+        $query = \App\Models\Booking::with(['user', 'assignedTo'])
+            ->where('vendor_id', auth()->id());
+
+        // Status Filter
+        if ($request->filled('status') && $request->status !== 'All') {
+            $query->where('status', strtolower($request->status));
+        }
+
+        // Date Filter
+        if ($request->filled('date_range')) {
+            switch ($request->date_range) {
+                case 'today':
+                    $query->whereDate('created_at', Carbon::today());
+                    break;
+                case 'yesterday':
+                    $query->whereDate('created_at', Carbon::yesterday());
+                    break;
+                case 'last_7_days':
+                    $query->where('created_at', '>=', Carbon::now()->subDays(7));
+                    break;
+                case 'this_month':
+                    $query->whereMonth('created_at', Carbon::now()->month);
+                    break;
+            }
+        }
+
+        $bookings = $query->latest()->paginate(20)->withQueryString();
 
         $technicians = \App\Models\User::where('role', 'technician')
             ->where('vendor_id', auth()->id())
@@ -137,6 +161,26 @@ class VendorController extends Controller
 
         return Inertia::render('Vendor/Bookings', [
             'bookings' => $bookings,
+            'technicians' => $technicians,
+            'filters' => $request->only(['status', 'date_range'])
+        ]);
+    }
+    public function showBooking($id)
+    {
+        $booking = \App\Models\Booking::with(['user', 'assignedTo', 'requirements'])
+            ->where('vendor_id', auth()->id())
+            ->where(function ($q) use ($id) {
+                $q->where('booking_id', $id)->orWhere('id', $id);
+            })
+            ->firstOrFail();
+
+        $technicians = \App\Models\User::where('role', 'technician')
+            ->where('vendor_id', auth()->id())
+            ->where('status', 'Active')
+            ->get(['id', 'name']);
+
+        return Inertia::render('Vendor/BookingDetails', [
+            'booking' => $booking,
             'technicians' => $technicians
         ]);
     }
@@ -162,12 +206,44 @@ class VendorController extends Controller
         $booking = \App\Models\Booking::where('vendor_id', auth()->id())->findOrFail($id);
 
         $request->validate([
-            'status' => 'required|in:pending,assigned,in_progress,completed,cancelled'
+            'status' => 'required|in:pending,confirmed,assigned,in_progress,completed,cancelled'
         ]);
 
         $booking->update(['status' => $request->status]);
 
         return back()->with('success', 'Booking status updated successfully.');
+    }
+
+    public function updateBookingNotes(Request $request, $id)
+    {
+        $booking = \App\Models\Booking::where('vendor_id', auth()->id())->findOrFail($id);
+
+        $request->validate([
+            'admin_note' => 'nullable|string'
+        ]);
+
+        $booking->update(['admin_note' => $request->admin_note]);
+
+        return back()->with('success', 'Booking notes updated successfully.');
+    }
+
+    public function updateBookingPayment(Request $request, $id)
+    {
+        $booking = \App\Models\Booking::where('vendor_id', auth()->id())->findOrFail($id);
+
+        $request->validate([
+            'total_amount' => 'required|numeric|min:0',
+            'payment_method' => 'nullable|string',
+            'is_paid' => 'required|boolean'
+        ]);
+
+        $booking->update([
+            'total_amount' => $request->total_amount,
+            'payment_method' => $request->payment_method,
+            'is_paid' => $request->is_paid
+        ]);
+
+        return back()->with('success', 'Payment details updated successfully.');
     }
 
     public function customers()

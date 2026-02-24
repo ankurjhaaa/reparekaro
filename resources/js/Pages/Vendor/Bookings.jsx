@@ -1,180 +1,184 @@
 import React, { useState } from 'react';
 import VendorLayout from '../../Layouts/VendorLayout';
-import { Calendar, User, MapPin, Clock, MoreVertical, Search, Filter, X } from 'lucide-react';
+import { Calendar, User, MapPin, Clock, Filter, ChevronLeft, ChevronRight, CheckCircle2 } from 'lucide-react';
 import Button from '../../Components/Forms/Button';
-import { usePage, Link, router, useForm } from '@inertiajs/react';
+import { usePage, Link, router } from '@inertiajs/react';
 
 export default function Bookings() {
-    const { bookings = [], technicians = [] } = usePage().props;
-    const [activeTab, setActiveTab] = useState('All');
-    const [assigningBooking, setAssigningBooking] = useState(null);
+    const { bookings, filters } = usePage().props;
+    const [activeTab, setActiveTab] = useState(filters.status || 'All');
+    const [activeDateRange, setActiveDateRange] = useState(filters.date_range || 'all');
 
-    const { data, setData, post, processing, errors, reset } = useForm({
-        technician_id: ''
-    });
+    const handleFilterChange = (type, value) => {
+        const newFilters = { ...filters, [type]: value };
+        if (type === 'status') setActiveTab(value);
+        if (type === 'date_range') setActiveDateRange(value);
 
-    const filteredBookings = activeTab === 'All' ? bookings : bookings.filter(b => b && b.status === activeTab.toLowerCase());
-
-    const openAssignModal = (booking) => {
-        if (!booking) return;
-        setAssigningBooking(booking);
-        setData('technician_id', (booking.assigned_to && booking.assigned_to.id) ? booking.assigned_to.id : '');
-    };
-
-    const handleAssign = (e) => {
-        e.preventDefault();
-        if (!assigningBooking || !assigningBooking.id) return;
-        post(route('vendor.bookings.assign', assigningBooking.id), {
-            onSuccess: () => {
-                setAssigningBooking(null);
-                reset();
-            }
+        router.get('/vendor/bookings', newFilters, {
+            preserveState: true,
+            preserveScroll: true,
+            replace: true
         });
     };
 
-    const cleanTechnicians = technicians || [];
+    const dateRanges = [
+        { label: 'All Time', value: 'all' },
+        { label: 'Today', value: 'today' },
+        { label: 'Yesterday', value: 'yesterday' },
+        { label: '7 Days', value: 'last_7_days' },
+        { label: 'This Month', value: 'this_month' },
+    ];
 
-    const handleReject = (id) => {
-        if (!id) return;
-        if (confirm('Are you sure you want to reject this booking?')) {
-            router.put(route('vendor.bookings.status', id), { status: 'cancelled' }, { preserveScroll: true });
-        }
-    };
+    const statusTabs = ['All', 'Pending', 'Assigned', 'In_Progress', 'Completed', 'Cancelled'];
 
     return (
-        <VendorLayout title="Bookings">
-            <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 sm:gap-4 mb-4 sm:mb-6">
-                <h1 className="text-xl sm:text-2xl font-bold text-gray-900">Bookings</h1>
-                <div className="flex gap-2">
-                    <Button variant="outline" className="flex items-center gap-1.5 sm:gap-2 text-[10px] sm:text-xs px-3 py-1.5 sm:px-4 sm:py-2">
-                        <Filter size={14} className="sm:w-4 sm:h-4" /> Filter
-                    </Button>
-                    <Button className="bg-(--primary) text-white flex items-center gap-1.5 sm:gap-2 text-[10px] sm:text-xs px-3 py-1.5 sm:px-4 sm:py-2">
-                        <Calendar size={14} className="sm:w-4 sm:h-4" /> New Booking
-                    </Button>
+        <VendorLayout title="Bookings Management">
+            {/* Header Area */}
+            <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 mb-6">
+                <div>
+                    <h1 className="text-xl font-black text-gray-900 tracking-tight">Bookings</h1>
+                    <p className="text-[10px] text-gray-400 font-bold uppercase tracking-widest">{bookings.total} Total Records</p>
+                </div>
+
+            </div>
+
+            {/* Advanced Filter Section */}
+            <div className="space-y-2 mb-8">
+                {/* Date Range Quick Select */}
+                <div className="bg-white p-1.5 rounded-xl border border-gray-100 shadow-sm inline-flex gap-1 overflow-x-auto no-scrollbar w-full sm:w-auto">
+                    {dateRanges.map((range) => (
+                        <button
+                            key={range.value}
+                            onClick={() => handleFilterChange('date_range', range.value)}
+                            className={`px-4 py-1.5 rounded-lg text-[10px] font-black uppercase tracking-wider transition-all whitespace-nowrap ${activeDateRange === range.value
+                                ? 'bg-gray-900 text-white shadow-md'
+                                : 'text-gray-400 hover:text-gray-600 hover:bg-gray-50'
+                                }`}
+                        >
+                            {range.label}
+                        </button>
+                    ))}
+                </div>
+
+                {/* Status Tabs */}
+                <div className="flex gap-2 overflow-x-auto no-scrollbar pb-1">
+                    {statusTabs.map((status) => (
+                        <button
+                            key={status}
+                            onClick={() => handleFilterChange('status', status)}
+                            className={`px-5 py-2 rounded-xl text-[11px] font-black uppercase tracking-widest transition-all border whitespace-nowrap ${activeTab === status
+                                ? 'bg-blue-50 text-(--primary) border-blue-100 shadow-sm'
+                                : 'bg-white text-gray-400 border-gray-100 hover:border-gray-200'
+                                }`}
+                        >
+                            {status.replace('_', ' ')}
+                        </button>
+                    ))}
                 </div>
             </div>
 
-            {/* Tabs */}
-            <div className="flex overflow-x-auto gap-2 mb-6 pb-2 no-scrollbar">
-                {['All', 'Pending', 'Assigned', 'Completed', 'Cancelled'].map((tab) => (
-                    <button
-                        key={tab}
-                        onClick={() => setActiveTab(tab)}
-                        className={`px-4 py-2 rounded-full text-sm font-bold whitespace-nowrap transition-colors ${activeTab === tab
-                            ? 'bg-gray-900 text-white'
-                            : 'bg-white text-gray-500 hover:bg-gray-100 border border-gray-200'
-                            }`}
-                    >
-                        {tab}
-                    </button>
-                ))}
-            </div>
-
-            {/* Booking List */}
-            <div className="space-y-3 sm:space-y-4">
-                {filteredBookings && filteredBookings.length > 0 ? filteredBookings.map((booking) => {
-                    if (!booking) return null;
-                    return (
-                        <div key={booking.id || Math.random()} className="bg-white p-3 sm:p-4 rounded-xl shadow-sm border border-gray-100 hover:shadow-md transition-shadow relative">
-                            <div className="flex justify-between items-start mb-2">
-                                <div className="flex items-center gap-2.5 sm:gap-3">
-                                    <div className={`w-8 h-8 sm:w-10 sm:h-10 rounded-lg flex items-center justify-center font-bold text-base sm:text-lg ${booking.status === 'pending' ? 'bg-yellow-50 text-yellow-600' :
-                                        booking.status === 'assigned' ? 'bg-blue-50 text-blue-600' :
-                                            'bg-green-50 text-green-600'
-                                        }`}>
-                                        {booking.name ? booking.name.charAt(0).toUpperCase() : 'S'}
-                                    </div>
-                                    <div>
-                                        <h3 className="font-bold text-gray-900 text-sm sm:text-base">{booking.booking_id || `#${booking?.id}`}</h3>
-                                        <p className="text-[10px] sm:text-xs text-gray-500 font-mono">{(booking.service_ids ? JSON.parse(booking.service_ids).length : 1)} Service(s)</p>
-                                    </div>
-                                </div>
-                                <span className={`px-1.5 sm:px-2 py-0.5 sm:py-1 rounded text-[9px] sm:text-[10px] font-bold uppercase tracking-wider ${booking.status === 'pending' ? 'bg-yellow-100 text-yellow-700' :
-                                    booking.status === 'assigned' ? 'bg-blue-100 text-blue-700' :
-                                        'bg-green-100 text-green-700'
-                                    }`}>
-                                    {booking.status}
-                                </span>
-                            </div>
-
-                            <div className="grid grid-cols-1 sm:grid-cols-2 gap-1.5 sm:gap-2 mt-2 sm:mt-3 text-xs sm:text-sm text-gray-600">
-                                <div className="flex items-center gap-1.5 sm:gap-2">
-                                    <User size={14} className="text-gray-400 shrink-0" />
-                                    <span className="font-medium text-gray-900 truncate">{booking.name || booking.user?.name || 'Customer'}</span>
-                                </div>
-                                <div className="flex items-center gap-1.5 sm:gap-2">
-                                    <Clock size={14} className="text-gray-400 shrink-0" />
-                                    <span>{booking.date ? new Date(booking.date).toLocaleDateString() : booking.created_at?.substring(0, 10)} {booking.time}</span>
-                                </div>
-                                <div className="flex items-center gap-1.5 sm:gap-2 sm:col-span-2">
-                                    <MapPin size={14} className="text-gray-400 shrink-0" />
-                                    <span className="truncate">{booking.address || 'Address not provided'} {booking.city ? `, ${booking.city}` : ''}</span>
-                                </div>
-                            </div>
-
-                            {booking.status === 'assigned' && booking.assigned_to && (
-                                <div className="mt-3 pt-3 border-t border-gray-50 flex items-center justify-between">
-                                    <div className="text-xs text-gray-500">
-                                        Assigned to <span className="font-bold text-gray-900">{typeof booking.assigned_to === 'object' ? booking.assigned_to?.name : 'Technician'}</span>
-                                    </div>
-                                    <button onClick={() => openAssignModal(booking)} className="text-blue-600 text-xs font-bold hover:underline">Change</button>
-                                </div>
-                            )}
-
-                            {booking.status === 'pending' && (
-                                <div className="mt-4 flex gap-2">
-                                    <Button onClick={() => openAssignModal(booking)} className="flex-1 bg-(--primary) text-white text-sm py-2">Assign Technician</Button>
-                                    <Button onClick={() => handleReject(booking.id)} variant="outline" className="flex-1 border-gray-200 text-gray-600 text-sm py-2 hover:bg-red-50 hover:text-red-600 hover:border-red-200">Reject</Button>
-                                </div>
-                            )}
+            {/* Bookings List */}
+            <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">
+                {bookings.data.length > 0 ? bookings.data.map((booking) => (
+                    <div key={booking.id} className="bg-white rounded-2xl border border-gray-100 shadow-sm hover:shadow-md transition-all group overflow-hidden flex flex-col">
+                        {/* Card Top: ID & Status */}
+                        <div className="p-4 border-b border-gray-50 flex justify-between items-center bg-gray-50/30">
+                            <span className="text-[11px] font-black text-gray-900 tracking-tighter">#{booking.booking_id}</span>
+                            <span className={`px-2 py-0.5 rounded text-[9px] font-black uppercase tracking-widest ${booking.status === 'pending' ? 'bg-amber-50 text-amber-600' :
+                                booking.status === 'completed' ? 'bg-emerald-50 text-emerald-600' :
+                                    'bg-blue-50 text-(--primary)'
+                                }`}>
+                                {booking.status}
+                            </span>
                         </div>
-                    );
-                }) : (
-                    <div className="col-span-full py-16 text-center bg-white rounded-xl shadow-sm border border-gray-100 text-gray-500">
-                        No bookings found.
+
+                        {/* Card Body */}
+                        <div className="p-4 flex-1 space-y-4">
+                            <div className="flex items-center gap-3">
+                                <div className="w-10 h-10 rounded-xl bg-blue-50 flex items-center justify-center text-(--primary) shrink-0 group-hover:scale-110 transition-transform">
+                                    <User size={18} strokeWidth={2.5} />
+                                </div>
+                                <div className="min-w-0">
+                                    <p className="text-sm font-black text-gray-900 truncate">{booking.name || booking.user?.name}</p>
+                                    <div className="flex items-center gap-2 text-[10px] text-gray-400 font-bold uppercase tracking-widest">
+                                        <Clock size={10} />
+                                        <span>{booking.time || 'Schedule pending'}</span>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div className="space-y-2">
+                                <div className="flex items-start gap-2.5 text-xs text-gray-500 font-semibold leading-relaxed">
+                                    <MapPin size={14} className="shrink-0 text-gray-300 mt-0.5" />
+                                    <span className="line-clamp-2">{booking.address}, {booking.city}</span>
+                                </div>
+                                <div className="flex items-center gap-2.5 text-xs text-gray-500 font-semibold">
+                                    <CheckCircle2 size={14} className="shrink-0 text-gray-300" />
+                                    <span>{JSON.parse(booking.service_ids || "[]").length} Services requested</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        {/* Card Footer: Action */}
+                        <div className="p-3 bg-white border-t border-gray-50">
+                            <Link
+                                href={`/vendor/bookings/${booking.booking_id || booking.id}`}
+                                className="w-full flex items-center justify-center gap-2 py-2.5 bg-gray-900 text-white rounded-xl text-[10px] font-black uppercase tracking-widest hover:bg-black transition-colors"
+                            >
+                                Manage Booking <ChevronRight size={14} strokeWidth={3} />
+                            </Link>
+                        </div>
+                    </div>
+                )) : (
+                    <div className="col-span-full py-20 text-center bg-white rounded-3xl border-2 border-dashed border-gray-100">
+                        <Filter size={40} className="mx-auto text-gray-200 mb-4" />
+                        <p className="text-sm font-bold text-gray-400">No bookings match your selected filters</p>
+                        <button onClick={() => handleFilterChange('date_range', 'all')} className="mt-4 text-(--primary) text-[10px] font-black uppercase tracking-widest hover:underline">Clear all filters</button>
                     </div>
                 )}
             </div>
 
-            {/* Assign Technician Modal */}
-            {assigningBooking && (
-                <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-gray-900/50 backdrop-blur-sm animate-fade-in">
-                    <div className="bg-white rounded-2xl shadow-xl w-full max-w-md overflow-hidden animate-slide-up">
-                        <div className="flex justify-between items-center p-5 border-b border-gray-100">
-                            <h2 className="text-xl font-bold text-gray-900">Assign Technician</h2>
-                            <button onClick={() => setAssigningBooking(null)} className="p-2 text-gray-400 hover:text-gray-600 rounded-full hover:bg-gray-100 transition-colors">
-                                <X size={20} />
-                            </button>
-                        </div>
-                        <form onSubmit={handleAssign} className="p-5 space-y-4">
-                            <div>
-                                <label className="block text-sm font-semibold text-gray-700 mb-2">Select Technician</label>
-                                <select
-                                    className="w-full px-4 py-2.5 rounded-xl border border-gray-200 focus:ring-2 focus:ring-(--primary)/20 focus:border-(--primary) outline-none transition-all"
-                                    value={data.technician_id}
-                                    onChange={e => setData('technician_id', e.target.value)}
-                                    required
+            {/* Compact Pagination */}
+            {bookings.links && bookings.links.length > 3 && (
+                <div className="mt-10 flex items-center justify-center gap-2">
+                    {bookings.links.map((link, i) => {
+                        if (link.label.includes('Previous')) {
+                            return (
+                                <Link
+                                    key={i}
+                                    href={link.url || '#'}
+                                    className={`p-2 rounded-xl border transition-all ${!link.url ? 'text-gray-200 border-gray-50 bg-gray-50/50 cursor-not-allowed' : 'text-gray-600 border-gray-100 hover:border-(--primary) hover:text-(--primary) bg-white'}`}
                                 >
-                                    <option value="" disabled>Choose a technician...</option>
-                                    {cleanTechnicians.map(tech => (tech && tech.id) ? (
-                                        <option key={tech.id} value={tech.id}>{tech.name || 'Unknown'}</option>
-                                    ) : null)}
-                                </select>
-                                {errors.technician_id && <p className="text-red-500 text-xs mt-1">{errors.technician_id}</p>}
-                                {cleanTechnicians.length === 0 && <p className="text-amber-500 text-xs mt-1">No active technicians available. Please add some first.</p>}
-                            </div>
-
-                            <div className="flex gap-3 pt-4 border-t border-gray-100">
-                                <Button type="button" onClick={() => setAssigningBooking(null)} className="flex-1 bg-gray-100 text-gray-700 hover:bg-gray-200 justify-center py-2.5">
-                                    Cancel
-                                </Button>
-                                <Button type="submit" disabled={processing || cleanTechnicians.length === 0} className="flex-1 justify-center py-2.5">
-                                    {processing ? 'Assigning...' : 'Confirm Assignment'}
-                                </Button>
-                            </div>
-                        </form>
-                    </div>
+                                    <ChevronLeft size={18} strokeWidth={2.5} />
+                                </Link>
+                            );
+                        }
+                        if (link.label.includes('Next')) {
+                            return (
+                                <Link
+                                    key={i}
+                                    href={link.url || '#'}
+                                    className={`p-2 rounded-xl border transition-all ${!link.url ? 'text-gray-200 border-gray-50 bg-gray-50/50 cursor-not-allowed' : 'text-gray-600 border-gray-100 hover:border-(--primary) hover:text-(--primary) bg-white'}`}
+                                >
+                                    <ChevronRight size={18} strokeWidth={2.5} />
+                                </Link>
+                            );
+                        }
+                        if (link.label === '...') {
+                            return <span key={i} className="px-2 text-gray-300">...</span>;
+                        }
+                        return (
+                            <Link
+                                key={i}
+                                href={link.url || '#'}
+                                className={`w-10 h-10 flex items-center justify-center rounded-xl text-[11px] font-black tracking-widest border transition-all ${link.active
+                                    ? 'bg-gray-900 border-gray-900 text-white shadow-lg'
+                                    : 'bg-white border-gray-100 text-gray-400 hover:border-gray-200 hover:text-gray-600'
+                                    }`}
+                                dangerouslySetInnerHTML={{ __html: link.label }}
+                            />
+                        );
+                    })}
                 </div>
             )}
         </VendorLayout>

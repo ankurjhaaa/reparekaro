@@ -114,7 +114,7 @@ export default function Jobs() {
 
                         <div className="px-4 sm:px-5 py-3 bg-gray-50/80 backdrop-blur-sm border-t border-gray-100 flex justify-between items-center mt-auto">
                             <span className="text-[9px] font-bold text-gray-400 uppercase tracking-wider">ID: {job.booking_id || job.id}</span>
-                            <Link href={`/technician/jobs/${job.id}`} className="group-hover:translate-x-1 flex items-center gap-1 text-[11px] font-bold text-(--primary) transition-transform">
+                            <Link href={`/technician/job/${job.id}`} className="group-hover:translate-x-1 flex items-center gap-1 text-[11px] font-bold text-(--primary) transition-transform">
                                 Go To Job <ArrowRight size={14} />
                             </Link>
                         </div>

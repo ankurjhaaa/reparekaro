@@ -44,6 +44,8 @@ Route::controller(TechnicianController::class)->middleware(['auth', 'role:techni
     Route::get('/dashboard', 'dashboard')->name('technician.dashboard');
     Route::get('/jobs', 'jobs')->name('technician.jobs');
     Route::get('/job/{id}', 'jobDetails')->name('technician.job.details');
+    Route::post('/job/{id}/complete', 'completeJob')->name('technician.job.complete');
+    Route::post('/job/{id}/requirement', 'storeRequirement')->name('technician.job.requirement');
     Route::get('/wallet', 'wallet')->name('technician.wallet');
     Route::get('/profile', 'profile')->name('technician.profile');
     Route::get('/notifications', 'notifications')->name('technician.notifications');
@@ -68,8 +70,11 @@ Route::controller(VendorController::class)->middleware(['auth', 'role:vendor'])-
     Route::delete('/technicians/{id}', 'destroyTechnician')->name('vendor.technicians.destroy');
     Route::get('/customers', 'customers')->name('vendor.customers');
     Route::get('/bookings', 'bookings')->name('vendor.bookings');
+    Route::get('/bookings/{id}', 'showBooking')->name('vendor.bookings.show');
     Route::post('/bookings/{id}/assign', 'assignBooking')->name('vendor.bookings.assign');
     Route::put('/bookings/{id}/status', 'updateBookingStatus')->name('vendor.bookings.status');
+    Route::post('/bookings/{id}/notes', 'updateBookingNotes')->name('vendor.bookings.notes');
+    Route::post('/bookings/{id}/payment', 'updateBookingPayment')->name('vendor.bookings.payment');
     Route::get('/reports', 'reports')->name('vendor.reports');
     Route::get('/settings', 'settings')->name('vendor.settings');
     Route::post('/settings', 'updateSettings')->name('vendor.settings.update');

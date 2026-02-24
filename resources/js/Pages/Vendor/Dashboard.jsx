@@ -19,7 +19,7 @@ export default function Dashboard() {
 
     return (
         <VendorLayout title="Dashboard">
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6 mb-6">
+            <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6 mb-6">
                 {stats.map((stat, index) => (
                     <div key={index} className="bg-white/80 backdrop-blur-xl p-4 sm:p-5 rounded-xl sm:rounded-2xl shadow-[0_2px_10px_rgb(0,0,0,0.03)] border border-white/60 hover:shadow-[0_4px_15px_rgb(0,0,0,0.05)] transition-all duration-300 relative overflow-hidden group">
                         <div className="absolute top-0 right-0 w-24 h-24 bg-gradient-to-br from-white/20 to-white/0 rounded-bl-full pointer-events-none -mr-4 -mt-4 transition-transform group-hover:scale-110"></div>
@@ -115,45 +115,52 @@ export default function Dashboard() {
             </div>
 
             {/* Recent Activity / Bookings Table */}
-            <div className="bg-white rounded-xl sm:rounded-2xl shadow-[0_2px_10px_rgb(0,0,0,0.03)] border border-gray-100 overflow-hidden">
+            <div className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
                 <div className="p-4 sm:p-5 border-b border-gray-100 flex justify-between items-center bg-white">
-                    <h2 className="text-base sm:text-lg font-bold text-gray-900">Recent Bookings</h2>
-                    <Link href="/vendor/bookings" className="text-blue-600 text-[10px] sm:text-xs font-bold hover:text-blue-700 hover:underline px-3 py-1.5 sm:px-4 sm:py-2 bg-blue-50 rounded-lg transition-colors">View All Bookings</Link>
+                    <h2 className="text-base sm:text-lg font-black text-gray-900 tracking-tight">Recent Bookings</h2>
+                    <Link href="/vendor/bookings" className="text-(--primary) text-[10px] font-black uppercase tracking-widest hover:underline px-4 py-2 bg-blue-50 rounded-lg transition-colors">View All</Link>
                 </div>
                 <div className="overflow-x-auto">
-                    <table className="w-full text-xs sm:text-sm text-left">
-                        <thead className="text-[10px] sm:text-xs text-gray-500 uppercase bg-gray-50/80">
+                    <table className="w-full text-left">
+                        <thead className="text-[10px] font-black text-gray-400 uppercase tracking-widest bg-gray-50/50">
                             <tr>
-                                <th className="px-4 sm:px-5 py-2.5 sm:py-3 whitespace-nowrap">Booking ID</th>
-                                <th className="px-4 sm:px-5 py-2.5 sm:py-3 whitespace-nowrap">Customer</th>
-                                <th className="px-4 sm:px-5 py-2.5 sm:py-3 whitespace-nowrap">Service</th>
-                                <th className="px-4 sm:px-5 py-2.5 sm:py-3 whitespace-nowrap">Status</th>
-                                <th className="px-4 sm:px-5 py-2.5 sm:py-3 whitespace-nowrap">Time</th>
-                                <th className="px-4 sm:px-5 py-2.5 sm:py-3 whitespace-nowrap">Action</th>
+                                <th className="px-5 py-3 whitespace-nowrap">ID</th>
+                                <th className="px-5 py-3 whitespace-nowrap">Customer</th>
+                                <th className="px-5 py-3 whitespace-nowrap">Service</th>
+                                <th className="px-5 py-3 whitespace-nowrap">Status</th>
+                                <th className="px-5 py-3 whitespace-nowrap">Time</th>
+                                <th className="px-5 py-3 whitespace-nowrap">Action</th>
                             </tr>
                         </thead>
-                        <tbody>
+                        <tbody className="divide-y divide-gray-50">
                             {recentBookings && recentBookings.length > 0 ? recentBookings.map((booking, i) => (
-                                <tr key={i} className={`border-b border-gray-50 hover:bg-gray-50/50 transition-colors ${i === recentBookings.length - 1 ? 'border-b-0' : ''}`}>
-                                    <td className="px-4 sm:px-5 py-3 sm:py-4 font-semibold text-gray-900">{booking.booking_id || `#${booking.id}`}</td>
-                                    <td className="px-4 sm:px-5 py-3 sm:py-4 truncate max-w-[120px]">{booking.name || booking.user?.name || 'Customer'}</td>
-                                    <td className="px-4 sm:px-5 py-3 sm:py-4 text-[10px] sm:text-xs">{(booking.service_ids ? JSON.parse(booking.service_ids).length : 1) + ' Services'}</td>
-                                    <td className="px-4 sm:px-5 py-3 sm:py-4">
-                                        <span className={`px-2 py-0.5 sm:py-1 rounded-md text-[9px] sm:text-[10px] font-bold uppercase tracking-wider ${booking.status === 'pending' ? 'bg-yellow-50 text-yellow-700 border border-yellow-200/50' :
-                                            booking.status === 'assigned' ? 'bg-blue-50 text-blue-700 border border-blue-200/50' :
-                                                'bg-green-50 text-green-700 border border-green-200/50'
+                                <tr key={i} className="hover:bg-gray-50/50 transition-colors group">
+                                    <td className="px-5 py-4 text-xs font-black text-gray-900">#{booking.booking_id || booking.id}</td>
+                                    <td className="px-5 py-4">
+                                        <p className="text-xs font-bold text-gray-900 truncate max-w-[120px]">{booking.name || booking.user?.name || 'Customer'}</p>
+                                    </td>
+                                    <td className="px-5 py-4 text-[10px] font-bold text-gray-400 uppercase">{(booking.service_ids ? JSON.parse(booking.service_ids).length : 1) + ' Services'}</td>
+                                    <td className="px-5 py-4">
+                                        <span className={`px-2 py-0.5 rounded text-[9px] font-black uppercase tracking-widest ${booking.status === 'pending' ? 'bg-amber-50 text-amber-600' :
+                                                booking.status === 'completed' ? 'bg-emerald-50 text-emerald-600' :
+                                                    'bg-blue-50 text-(--primary)'
                                             }`}>
                                             {booking.status}
                                         </span>
                                     </td>
-                                    <td className="px-4 sm:px-5 py-3 sm:py-4 text-gray-500 text-[10px] sm:text-xs whitespace-nowrap">{booking.time || booking.created_at?.substring(0, 10)}</td>
-                                    <td className="px-4 sm:px-5 py-3 sm:py-4">
-                                        <Link href="/vendor/bookings" className="text-(--primary) font-bold hover:text-blue-800 text-[10px] sm:text-xs flex items-center gap-1">Manage</Link>
+                                    <td className="px-5 py-4 text-gray-500 text-[10px] font-bold whitespace-nowrap">{booking.time || booking.created_at?.substring(0, 10)}</td>
+                                    <td className="px-5 py-4">
+                                        <Link
+                                            href={`/vendor/bookings/${booking.booking_id || booking.id}`}
+                                            className="inline-flex items-center gap-1 text-(--primary) font-black text-[10px] uppercase tracking-widest hover:bg-blue-50 px-3 py-1.5 rounded-lg transition-all"
+                                        >
+                                            View
+                                        </Link>
                                     </td>
                                 </tr>
                             )) : (
                                 <tr>
-                                    <td colSpan="6" className="text-center py-6 sm:py-8 text-gray-500 text-xs sm:text-sm">No recent bookings found.</td>
+                                    <td colSpan="6" className="text-center py-10 text-gray-400 text-xs font-bold uppercase tracking-widest italic border-0">No recent bookings found.</td>
                                 </tr>
                             )}
                         </tbody>

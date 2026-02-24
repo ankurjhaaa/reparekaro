@@ -49,12 +49,57 @@ class TechnicianController extends Controller
     }
     public function jobDetails($id)
     {
-        $job = \App\Models\Booking::with(['user', 'vendor'])
+        $job = \App\Models\Booking::with(['user', 'vendor', 'requirements'])
             ->where('assigned_to', auth()->id())
             ->findOrFail($id);
 
         return Inertia::render('Technician/JobDetails', ['job' => $job]);
     }
+    public function completeJob(Request $request, $id)
+    {
+        $request->validate([
+            'otp' => 'required|string|size:4'
+        ]);
+
+        $job = \App\Models\Booking::where('assigned_to', auth()->id())
+            ->whereIn('status', ['assigned', 'in_progress'])
+            ->findOrFail($id);
+
+        if ($job->otp !== $request->otp) {
+            return back()->withErrors(['otp' => 'Invalid OTP. Please check with customer.']);
+        }
+
+        $job->update([
+            'status' => 'completed',
+            'is_paid' => true // Assuming payment is confirmed via OTP
+        ]);
+
+        return redirect()->route('technician.jobs')->with('success', 'Job completed successfully.');
+    }
+    public function storeRequirement(Request $request, $id)
+    {
+        $request->validate([
+            'name' => 'required|string|max:255',
+            'qty' => 'required|integer|min:1',
+            'price' => 'required|numeric|min:0'
+        ]);
+
+        $booking = \App\Models\Booking::where('assigned_to', auth()->id())
+            ->where('status', '!=', 'completed')
+            ->findOrFail($id);
+
+        $total_price = $request->qty * $request->price;
+
+        $booking->requirements()->create([
+            'name' => $request->name,
+            'qty' => $request->qty,
+            'price' => $request->price,
+            'total_price' => $total_price
+        ]);
+
+        return back()->with('success', 'Requirement added successfully.');
+    }
+
     public function wallet()
     {
         return Inertia::render('Technician/Wallet', [

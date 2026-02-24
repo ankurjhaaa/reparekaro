@@ -9,6 +9,8 @@ use Inertia\Inertia;
 use App\Models\Service;
 use App\Models\ServiceRate;
 use App\Models\Booking;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 
 class PublicController extends Controller
 {
@@ -33,7 +35,7 @@ class PublicController extends Controller
     public function storeBooking(Request $request)
     {
         $request->validate([
-            'selectedServices' => 'required|array',
+            'selectedServices' => 'required|array|min:1',
             'date' => 'required|string',
             'time' => 'required|string',
             'name' => 'required|string|max:255',
@@ -44,55 +46,89 @@ class PublicController extends Controller
             'notes' => 'nullable|string',
         ]);
 
-        if (auth()->check()) {
-            $existingAddress = auth()->user()->addresses()
+        DB::beginTransaction();
+
+        try {
+            // 1. Handle User Authentication (Login or Register)
+            if (Auth::check()) {
+                $user = Auth::user();
+            } else {
+                // Check if user exists by phone (mobile)
+                $user = User::where('phone', $request->mobile)->first();
+
+                if (!$user) {
+                    $user = User::create([
+                        'name' => $request->name,
+                        'phone' => $request->mobile,
+                        'role' => 'user',
+                        'password' => Hash::make('password'), // Direct password for guest
+                    ]);
+                }
+
+                Auth::login($user);
+            }
+
+            $userId = $user->id;
+
+            // 2. Handle Address Management
+            $existingAddress = $user->addresses()
                 ->where('address', $request->address)
                 ->where('city', $request->city)
                 ->first();
 
             if (!$existingAddress) {
-                auth()->user()->addresses()->create([
+                $user->addresses()->create([
                     'name' => $request->name,
                     'mobile' => $request->mobile,
                     'address' => $request->address,
                     'city' => $request->city,
                     'landmark' => $request->landmark,
                     'address_type' => 'other',
-                    'is_default' => false,
+                    'is_default' => $user->addresses()->count() === 0,
                 ]);
             }
+
+            // 3. Prepare Booking Data
+            $serviceIds = collect($request->selectedServices)->pluck('id')->toArray();
+            $totalAmount = collect($request->selectedServices)->sum('price');
+
+            // Pick the vendor from the first service rate
+            $firstService = ServiceRate::find($serviceIds[0]);
+            $vendorId = $firstService ? $firstService->vendor_id : null;
+
+            // Generate unique Booking ID
+            do {
+                $bookingId = 'RK-' . rand(100000, 999999);
+            } while (Booking::where('booking_id', $bookingId)->exists());
+
+            // 4. Create Booking
+            $booking = Booking::create([
+                'vendor_id' => $vendorId,
+                'booking_id' => $bookingId,
+                'user_id' => $userId,
+                'date' => $request->date,
+                'time' => $request->time,
+                'service_ids' => json_encode($request->selectedServices),
+                'total_amount' => $totalAmount,
+                'name' => $request->name,
+                'mobile' => $request->mobile,
+                'address' => $request->address,
+                'city' => $request->city,
+                'landmark' => $request->landmark,
+                'user_note' => $request->notes,
+                'status' => 'pending',
+                'source' => 'web',
+                'otp' => rand(1000, 9999),
+            ]);
+
+            DB::commit();
+
+            return redirect()->back()->with('success', 'Booking Confirmed! ID: ' . $bookingId);
+
+        } catch (\Exception $e) {
+            DB::rollBack();
+            return redirect()->back()->withErrors(['error' => 'Booking failed: ' . $e->getMessage()]);
         }
-
-        $serviceIds = collect($request->selectedServices)->pluck('id')->toArray();
-        $totalAmount = collect($request->selectedServices)->sum('price');
-
-        // Pick the vendor from the first service rate
-        $firstService = ServiceRate::find($serviceIds[0]);
-        $vendorId = $firstService ? $firstService->vendor_id : null;
-
-        $booking = new Booking();
-        $booking->vendor_id = $vendorId;
-        $booking->booking_id = 'RK-' . strtoupper(uniqid());
-        $booking->user_id = auth()->id();
-        $booking->date = $request->date;
-        $booking->time = $request->time;
-        // Save the raw, rich objects array requested by the user instead of flat ids
-        $booking->service_ids = json_encode($request->selectedServices);
-        $booking->total_amount = $totalAmount;
-
-        // New Schema Fields
-        $booking->name = $request->name;
-        $booking->mobile = $request->mobile;
-        $booking->address = $request->address;
-        $booking->city = $request->city;
-        $booking->landmark = $request->landmark;
-        $booking->user_note = $request->notes;
-        $booking->status = 'pending';
-        // Source defaults to web if we are coming from the website frontend
-        $booking->source = 'web';
-        $booking->save();
-
-        return redirect()->back()->with('success', 'Booking Confirmed!');
     }
 
 
@@ -126,7 +162,7 @@ class PublicController extends Controller
     }
     public function bookingDetails($id)
     {
-        $booking = Booking::with(['vendor'])->where('user_id', auth()->id())->where('booking_id', $id)->firstOrFail();
+        $booking = Booking::with(['vendor', 'assignedTo', 'requirements'])->where('user_id', auth()->id())->where('booking_id', $id)->firstOrFail();
         return Inertia::render('Public/BookingDetails', ['booking' => $booking]);
     }
     public function savedServices()

@@ -22,4 +22,9 @@ class Booking extends Model
     {
         return $this->belongsTo(User::class, 'assigned_to');
     }
+
+    public function requirements()
+    {
+        return $this->hasMany(Requirement::class);
+    }
 }
