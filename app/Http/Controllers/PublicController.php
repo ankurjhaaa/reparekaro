@@ -2,7 +2,9 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\User;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Hash;
 use Inertia\Inertia;
 use App\Models\Service;
 use App\Models\ServiceRate;
@@ -92,6 +94,7 @@ class PublicController extends Controller
 
         return redirect()->back()->with('success', 'Booking Confirmed!');
     }
+
 
     public function services()
     {

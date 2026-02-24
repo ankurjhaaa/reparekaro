@@ -90,38 +90,38 @@ class TechnicianController extends Controller
     }
     public function editProfile()
     {
-        return Inertia::render('technician/EditProfile');
+        return Inertia::render('Technician/EditProfile');
     }
     public function changePassword()
     {
-        return Inertia::render('technician/ChangePassword');
+        return Inertia::render('Technician/ChangePassword');
     }
     public function bankDetails()
     {
-        return Inertia::render('technician/BankDetails');
+        return Inertia::render('Technician/BankDetails');
     }
     public function terms()
     {
-        return Inertia::render('technician/Terms');
+        return Inertia::render('Technician/Terms');
     }
     public function chat($id)
     {
-        return Inertia::render('technician/Chat', ['id' => $id]);
+        return Inertia::render('Technician/Chat', ['id' => $id]);
     }
     public function serviceArea()
     {
-        return Inertia::render('technician/ServiceArea');
+        return Inertia::render('Technician/ServiceArea');
     }
     public function documents()
     {
-        return Inertia::render('technician/Documents');
+        return Inertia::render('Technician/Documents');
     }
     public function reviews()
     {
-        return Inertia::render('technician/Reviews');
+        return Inertia::render('Technician/Reviews');
     }
     public function skills()
     {
-        return Inertia::render('technician/Skills');
+        return Inertia::render('Technician/Skills');
     }
 }

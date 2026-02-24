@@ -133,7 +133,7 @@ export default function BookingWizard({ services: categories, addresses = [], on
     const totalAmount = formData.selectedServices.reduce((sum, item) => sum + parseFloat(item.price), 0);
 
     return (
-        <div className="w-full h-full sm:h-auto max-w-2xl mx-auto bg-white sm:rounded-xl shadow-sm sm:shadow-md border-0 sm:border border-gray-100 overflow-hidden flex flex-col sm:min-h-[650px] relative transition-all duration-300">
+        <div className="w-full h-full sm:h-[85vh] sm:max-h-[750px] max-w-2xl mx-auto bg-white sm:rounded-xl shadow-sm sm:shadow-md border-0 sm:border border-gray-100 overflow-hidden flex flex-col relative transition-all duration-300">
             {/* Header */}
             <div className="bg-white/90 backdrop-blur-md px-4 py-4 border-b border-gray-100 z-10 shrink-0 sticky top-0">
                 <div className="flex items-center justify-between">
@@ -172,7 +172,7 @@ export default function BookingWizard({ services: categories, addresses = [], on
             )}
 
             {/* Scrollable Content */}
-            <div className="flex-1 overflow-y-auto bg-gray-50 pb-36 sm:pb-28 custom-scrollbar">
+            <div className="flex-1 overflow-y-auto bg-gray-50 pb-10 sm:pb-28 custom-scrollbar">
 
                 {/* Step 1: Select Category */}
                 {step === 1 && (
@@ -183,28 +183,42 @@ export default function BookingWizard({ services: categories, addresses = [], on
                                 <span className="text-sm font-bold text-blue-900">₹{totalAmount}</span>
                             </div>
                         )}
-                        <div className="grid grid-cols-2 md:grid-cols-3 gap-4 mt-2 px-1">
+                        <div className="grid grid-cols-2 md:grid-cols-3 gap-3 mt-2 px-1">
                             {categories.map((category) => {
                                 const isSelected = isCategorySelected(category.id);
                                 return (
                                     <div
                                         key={category.id}
-                                        className={`cursor-pointer rounded-xl p-4 flex flex-col items-center justify-center text-center shadow-sm border transition-all duration-300 hover:-translate-y-1 hover:shadow-md h-32 relative ${isSelected ? 'bg-blue-50/40 border-(--primary) ring-2 ring-(--primary)/20' : 'bg-white border-gray-100 hover:border-blue-200'}`}
+                                        className={`cursor-pointer rounded-2xl flex flex-col items-center justify-center text-center p-4 bg-white shadow-[0_2px_8px_rgb(0,0,0,0.03)] border transition-all duration-300 hover:-translate-y-1 hover:shadow-md relative group h-32 ${isSelected ? 'border-(--primary) bg-blue-50/30' : 'border-gray-100/80 hover:border-blue-200'}`}
                                         onClick={() => { setError(''); setActiveCategory(category); }}
                                     >
+                                        {/* Selection Checkmark */}
                                         {isSelected && (
-                                            <div className="absolute top-2.5 right-2.5 w-5 h-5 bg-(--primary) text-white rounded-full flex items-center justify-center shadow-sm animate-in zoom-in duration-200">
+                                            <div className="absolute top-2.5 right-2.5 w-5 h-5 bg-(--primary) text-white rounded-full flex items-center justify-center shadow-sm animate-in zoom-in duration-200 z-10">
                                                 <Check size={12} strokeWidth={3} />
                                             </div>
                                         )}
-                                        <div className={`w-12 h-12 rounded-full overflow-hidden flex items-center justify-center mb-3 shadow-inner ${isSelected ? 'bg-(--primary) text-white scale-110 transition-transform' : 'bg-gray-50 text-gray-400'}`}>
+
+                                        {/* Smaller, Refined Image Container */}
+                                        <div className={`w-14 h-14 rounded-xl overflow-hidden flex items-center justify-center mb-3 border border-gray-100 transition-transform duration-300 shadow-sm ${isSelected ? 'scale-110 shadow-blue-200 bg-white' : 'bg-gray-50 text-gray-400 group-hover:scale-105 group-hover:bg-white'}`}>
                                             {category.image_url ? (
-                                                <img src={category.image_url} alt={category.name} className="w-full h-full object-cover" />
+                                                <img
+                                                    src={category.image_url}
+                                                    alt={category.name}
+                                                    className="w-full h-full object-cover"
+                                                />
                                             ) : (
-                                                <CheckCircle2 size={24} />
+                                                <Wrench size={24} className="opacity-50" />
                                             )}
                                         </div>
-                                        <h3 className={`font-bold text-xs leading-tight px-1 ${isSelected ? 'text-(--primary)' : 'text-gray-700'}`}>{category.name}</h3>
+
+                                        {/* Minimalist Title */}
+                                        <h3 className={`font-bold text-xs leading-tight transition-colors ${isSelected ? 'text-(--primary)' : 'text-gray-800 group-hover:text-blue-900'}`}>{category.name}</h3>
+
+                                        {/* Active Bottom Border Line for Polish */}
+                                        {isSelected && (
+                                            <div className="absolute bottom-0 left-1/2 -translate-x-1/2 w-1/2 h-1 bg-(--primary) rounded-t-full"></div>
+                                        )}
                                     </div>
                                 );
                             })}
@@ -242,7 +256,7 @@ export default function BookingWizard({ services: categories, addresses = [], on
                             </div>
                         </div>
 
-                        <div>
+                        <div className="mb-8">
                             <h3 className="text-gray-900 font-extrabold text-sm mb-4">Select Time Slot</h3>
                             <div className="grid grid-cols-2 sm:grid-cols-3 gap-3 px-1">
                                 {['09:00 AM', '10:00 AM', '11:00 AM', '12:00 PM', '01:00 PM', '02:00 PM', '03:00 PM', '04:00 PM', '05:00 PM'].map((time) => (
@@ -268,45 +282,56 @@ export default function BookingWizard({ services: categories, addresses = [], on
                 {step === 3 && (
                     <div className="p-4 animate-fade-in-right space-y-5 bg-white min-h-full">
 
-                        {/* Saved Addresses Section */}
-                        {addresses && addresses.length > 0 && (
+                        {/* Saved Addresses Section - HIDE completely if adding new address */}
+                        {addresses && addresses.length > 0 && !showNewAddressForm && (
                             <div className="mb-4">
                                 <div className="flex items-center justify-between mb-4">
-                                    <h3 className="text-gray-900 font-extrabold text-sm">Saved Addresses</h3>
-                                    {!showNewAddressForm && (
-                                        <button
-                                            onClick={() => {
-                                                setShowNewAddressForm(true);
-                                                setFormData(prev => ({ ...prev, name: '', mobile: '', address: '', city: '', landmark: '' }));
-                                            }}
-                                            className="text-xs font-bold text-(--primary) flex items-center gap-1.5 hover:text-blue-700 bg-blue-50/50 hover:bg-blue-100 px-3 py-1.5 rounded-full transition-colors"
-                                        >
-                                            <Plus size={14} /> Add New
-                                        </button>
-                                    )}
+                                    <h3 className="text-gray-900 font-extrabold text-sm">Select Service Address</h3>
+                                    <button
+                                        onClick={() => {
+                                            setShowNewAddressForm(true);
+                                            setFormData(prev => ({ ...prev, name: '', mobile: '', address: '', city: '', landmark: '' }));
+                                        }}
+                                        className="text-xs font-bold text-(--primary) flex items-center gap-1.5 hover:text-blue-700 bg-blue-50/50 hover:bg-blue-100 px-3 py-1.5 rounded-full transition-colors"
+                                    >
+                                        <Plus size={14} /> Add New
+                                    </button>
                                 </div>
                                 <div className="flex flex-col gap-3 py-1">
                                     {addresses.map(addr => {
-                                        const isSelected = formData.address === addr.address && formData.city === addr.city && !showNewAddressForm;
+                                        const isSelected = formData.address === addr.address && formData.city === addr.city;
                                         return (
                                             <button
                                                 key={addr.id}
                                                 onClick={() => handleAddressSelect(addr)}
-                                                className={`w-full text-left bg-white border rounded-xl p-4 transition-all duration-200 focus:outline-none ${isSelected ? 'border-(--primary) shadow-sm ring-1 ring-(--primary) relative bg-blue-50/10' : 'border-gray-200 shadow-sm hover:border-blue-300 hover:shadow'}`}
+                                                className={`w-full text-left bg-white border rounded-lg p-4 transition-all duration-200 focus:outline-none relative ${isSelected ? 'border-(--primary) shadow-[0_4px_12px_rgb(0,0,0,0.05)] ring-1 ring-(--primary) bg-blue-50/10' : 'border-gray-200 shadow-sm hover:border-blue-300 hover:shadow'}`}
                                             >
-                                                <div className="flex items-start justify-between mb-2">
+                                                {/* Header & Badges */}
+                                                <div className="flex items-start justify-between mb-3">
                                                     <div className="flex items-center gap-2">
-                                                        <div className={`p-1.5 rounded-md ${isSelected ? 'bg-(--primary) text-white' : 'bg-gray-100 text-gray-500'}`}>
-                                                            {addr.address_type === 'home' ? <Home size={14} /> : addr.address_type === 'office' ? <Briefcase size={14} /> : <MapPin size={14} />}
+                                                        <div className={`p-2 rounded-xl ${isSelected ? 'bg-(--primary) text-white' : 'bg-gray-100 text-gray-500'}`}>
+                                                            {addr.address_type === 'home' ? <Home size={16} /> : addr.address_type === 'office' ? <Briefcase size={16} /> : <MapPin size={16} />}
                                                         </div>
-                                                        <span className={`font-bold text-sm ${isSelected ? 'text-gray-900' : 'text-gray-700'}`}>{addr.name}</span>
+                                                        <div>
+                                                            <span className={`font-bold text-sm block leading-tight ${isSelected ? 'text-gray-900' : 'text-gray-700'}`}>{addr.name}</span>
+                                                            <div className="flex items-center gap-1 text-xs text-gray-500 font-medium mt-0.5">
+                                                                <Phone size={10} /> {addr.mobile}
+                                                            </div>
+                                                        </div>
                                                     </div>
-                                                    <span className={`text-[10px] font-bold px-2 py-0.5 rounded uppercase shrink-0 ${isSelected ? 'bg-blue-100 text-blue-800' : 'bg-gray-100 text-gray-500'}`}>{addr.address_type}</span>
+                                                    <span className={`text-[9px] font-black px-2.5 py-1 rounded-md uppercase tracking-wider shrink-0 shadow-sm ${isSelected ? 'bg-blue-100 text-blue-800 border border-blue-200/50' : 'bg-gray-100 text-gray-500 border border-gray-200/50'}`}>{addr.address_type}</span>
                                                 </div>
-                                                <p className={`text-xs pl-8 pr-6 leading-relaxed ${isSelected ? 'text-gray-700 font-medium' : 'text-gray-500'}`}>{addr.address}, {addr.city}</p>
+
+                                                {/* Full Address */}
+                                                <div className={`text-xs pl-10 pr-8 leading-relaxed mb-1 ${isSelected ? 'text-gray-700 font-medium' : 'text-gray-500'}`}>
+                                                    <p>{addr.address}</p>
+                                                    <p className="mt-0.5">{addr.city}{addr.landmark ? `, Near ${addr.landmark}` : ''}</p>
+                                                </div>
+
+                                                {/* Selection Checkmark */}
                                                 {isSelected && (
-                                                    <div className="absolute top-1/2 -translate-y-1/2 right-4 text-(--primary) bg-white rounded-full">
-                                                        <CheckCircle2 size={24} className="fill-blue-100 text-(--primary)" />
+                                                    <div className="absolute top-1/2 -translate-y-1/2 right-4 w-6 h-6 bg-(--primary) rounded-full flex items-center justify-center shadow-sm">
+                                                        <Check size={14} className="text-white" strokeWidth={3} />
                                                     </div>
                                                 )}
                                             </button>
@@ -316,20 +341,25 @@ export default function BookingWizard({ services: categories, addresses = [], on
                             </div>
                         )}
 
+                        {/* New Address Form */}
                         {showNewAddressForm && (
-                            <div className="bg-gray-50 p-4 rounded-xl border border-gray-200 shadow-sm space-y-4">
-                                <div className="flex items-center justify-between border-b border-gray-200 pb-3 mb-4">
-                                    <h3 className="text-gray-900 font-bold text-sm">Enter Delivery Details</h3>
+                            <div className="bg-gray-50/80 p-5 pb-10  space-y-5 relative overflow-hidden">
+                                <div className="absolute top-0 right-0 w-32 h-32 rounded-full blur-xl -mr-10 -mt-10 pointer-events-none"></div>
+                                <div className="flex items-center justify-between border-b border-gray-200 pb-3 mb-2 relative z-10">
+                                    <h3 className="text-gray-900 font-extrabold text-sm flex items-center gap-2">
+                                        <MapPin size={16} className="text-(--primary)" /> New Address Details
+                                    </h3>
                                     {addresses && addresses.length > 0 && (
                                         <button
                                             onClick={() => setShowNewAddressForm(false)}
-                                            className="text-xs text-gray-500 hover:text-gray-800 font-semibold px-3 py-1.5 rounded-full hover:bg-gray-200/50 transition-colors"
+                                            className="text-[11px] text-gray-500 hover:text-red-600 font-black uppercase tracking-wider px-3 py-1.5 rounded-lg hover:bg-red-50 hover:border-red-100 border border-transparent transition-colors"
                                         >
                                             Cancel
                                         </button>
                                     )}
                                 </div>
-                                <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+
+                                <div className="grid grid-cols-1 md:grid-cols-2 gap-4 relative z-10">
                                     <Input
                                         label="Full Name *"
                                         icon={User}
@@ -346,15 +376,17 @@ export default function BookingWizard({ services: categories, addresses = [], on
                                     />
                                 </div>
 
-                                <Input
-                                    label="Service Address *"
-                                    icon={MapPin}
-                                    placeholder="House No, Street, Apartment..."
-                                    value={formData.address}
-                                    onChange={(e) => { setError(''); setFormData({ ...formData, address: e.target.value }) }}
-                                />
+                                <div className="relative z-10">
+                                    <Input
+                                        label="Service Address / Flat No. *"
+                                        icon={MapPin}
+                                        placeholder="House No, Street, Apartment..."
+                                        value={formData.address}
+                                        onChange={(e) => { setError(''); setFormData({ ...formData, address: e.target.value }) }}
+                                    />
+                                </div>
 
-                                <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                                <div className="grid grid-cols-1 md:grid-cols-2 gap-4 relative z-10">
                                     <Input
                                         label="City *"
                                         icon={Map}
@@ -365,10 +397,13 @@ export default function BookingWizard({ services: categories, addresses = [], on
                                     <Input
                                         label="Landmark (Optional)"
                                         icon={Navigation}
-                                        placeholder="Near Apollo"
+                                        placeholder="Near Apollo Hospital"
                                         value={formData.landmark}
                                         onChange={(e) => setFormData({ ...formData, landmark: e.target.value })}
                                     />
+                                </div>
+                                <div className="text-[10px] text-gray-500 font-medium text-center relative z-10 mt-2">
+                                    This address will be saved for future bookings.
                                 </div>
                             </div>
                         )}
@@ -377,76 +412,79 @@ export default function BookingWizard({ services: categories, addresses = [], on
 
                 {/* Step 4: Review */}
                 {step === 4 && (
-                    <div className="p-4 animate-fade-in-right space-y-4 bg-gray-50 min-h-full">
-                        <div className="bg-white p-4 rounded-xl shadow-sm border border-gray-200 relative overflow-hidden">
-                            <div className="absolute top-0 left-0 w-1 h-full bg-(--primary)"></div>
-                            <h3 className="text-gray-900 font-bold text-sm mb-4 flex items-center justify-between">
-                                <span>Order Summary</span>
-                                <span className="text-[10px] uppercase font-bold tracking-wider bg-blue-50 text-(--primary) px-2.5 py-1 rounded-md border border-blue-100">{formData.selectedServices.length} Items</span>
-                            </h3>
-                            <div className="space-y-3 lg:max-h-60 overflow-y-auto pr-2 flex flex-col custom-scrollbar">
-                                {formData.selectedServices.map(s => (
-                                    <div key={s.id} className="flex flex-col gap-1 bg-white p-3 rounded-xl border border-gray-100 shadow-sm relative group hover:border-blue-100 transition-colors">
-                                        <div className="flex items-start justify-between">
-                                            <div className="flex gap-3">
-                                                <div className="w-10 h-10 rounded-xl overflow-hidden bg-gray-50 flex items-center justify-center text-(--primary) shrink-0 border border-gray-100">
-                                                    {s.category_image ? (
-                                                        <img src={s.category_image} alt={s.title} className="w-full h-full object-cover" />
-                                                    ) : (
-                                                        <CheckCircle2 size={16} />
-                                                    )}
-                                                </div>
-                                                <div>
-                                                    <span className="font-extrabold text-gray-900 text-sm leading-tight block pr-1 mb-0.5">{s.title}</span>
-                                                    <span className="text-xs font-medium text-gray-500">{s.duration || 'Variable'}</span>
-                                                </div>
+                    <div className="p-4 pb-10 animate-fade-in-right space-y-4 bg-gray-50/50">
+
+                        {/* Order Summary Card */}
+                        <div className="bg-white rounded-lg shadow-sm border border-gray-100 overflow-hidden">
+                            <div className="p-3 border-b border-gray-50 bg-gray-50/30 flex justify-between items-center">
+                                <h3 className="text-[11px] font-black text-gray-500 uppercase tracking-wider flex items-center gap-1.5"><CheckCircle2 size={12} className="text-(--primary)" /> Order Summary</h3>
+                                <div className="bg-blue-50 text-blue-700 text-[10px] font-bold px-2 py-0.5 rounded-md uppercase tracking-wide border border-blue-100/50">{formData.selectedServices.length} Items</div>
+                            </div>
+
+                            <div className="p-0 max-h-60 overflow-y-auto custom-scrollbar">
+                                {formData.selectedServices.map((s, index) => (
+                                    <div key={s.id} className={`flex items-start justify-between p-3.5 hover:bg-gray-50 transition-colors ${index !== formData.selectedServices.length - 1 ? 'border-b border-gray-50/80' : ''}`}>
+                                        <div className="flex gap-3">
+                                            <div className="w-10 h-10 rounded-xl overflow-hidden bg-gray-50 border border-gray-100 shrink-0 flex items-center justify-center text-gray-400">
+                                                {s.category_image ? (
+                                                    <img src={s.category_image} alt={s.title} className="w-full h-full object-cover" />
+                                                ) : (
+                                                    <CheckCircle2 size={16} />
+                                                )}
                                             </div>
-                                            <div className="flex flex-col items-end shrink-0">
-                                                <span className="text-sm text-gray-900 font-black">₹{parseFloat(s.price).toFixed(0)}</span>
-                                                <button onClick={() => handleServiceToggle(s)} className="text-red-400 hover:text-white hover:bg-red-500 rounded-md p-1.5 -mr-1.5 transition-colors mt-1">
-                                                    <Trash2 size={14} />
-                                                </button>
+                                            <div>
+                                                <h4 className="text-xs font-bold text-gray-900 leading-tight pr-2 mb-0.5">{s.title}</h4>
+                                                <span className="text-[10px] text-gray-500 font-medium flex items-center gap-1"><Clock size={10} /> {s.duration || 'Standard'}</span>
                                             </div>
+                                        </div>
+                                        <div className="flex flex-col items-end shrink-0 justify-between h-full">
+                                            <span className="text-sm font-black text-gray-900">₹{parseFloat(s.price).toFixed(0)}</span>
+                                            <button onClick={() => handleServiceToggle(s)} className="text-red-400 hover:text-red-600 p-1 -mr-1 mt-1 transition-colors rounded-md hover:bg-red-50">
+                                                <Trash2 size={14} />
+                                            </button>
                                         </div>
                                     </div>
                                 ))}
                             </div>
 
-                            <div className="mt-4 pt-4 border-t-2 border-dashed border-gray-100 flex items-center justify-between font-black text-gray-900 text-lg">
-                                <span>Total Amount</span>
-                                <span className="text-2xl text-(--primary)">₹{totalAmount.toFixed(0)}</span>
+                            <div className="p-4 bg-gray-50/50 border-t border-gray-100 flex items-center justify-between">
+                                <span className="text-xs font-bold text-gray-600 uppercase tracking-widest">Total Amount</span>
+                                <span className="text-xl font-black text-(--primary)">₹{totalAmount.toFixed(0)}</span>
                             </div>
                         </div>
 
-                        <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-2 space-y-1">
-                            <div className="flex items-center justify-between p-3 hover:bg-gray-50 rounded-xl cursor-pointer transition-colors group" onClick={() => setStep(2)}>
-                                <div className="flex items-center gap-4">
-                                    <div className="bg-blue-50 text-(--primary) p-2.5 rounded-xl group-hover:scale-110 transition-transform">
-                                        <Calendar size={18} />
+                        {/* Schedule & Address Card */}
+                        <div className="bg-white rounded-lg shadow-sm border border-gray-100 divide-y divide-gray-50">
+                            {/* Schedule */}
+                            <div className="flex items-center justify-between p-4 hover:bg-gray-50/80 active:bg-gray-100 cursor-pointer transition-colors group" onClick={() => setStep(2)}>
+                                <div className="flex items-center gap-3.5">
+                                    <div className="w-9 h-9 rounded-xl bg-blue-50 flex items-center justify-center text-(--primary) border border-blue-100/50 group-hover:scale-105 transition-transform shrink-0">
+                                        <Calendar size={16} />
                                     </div>
                                     <div>
-                                        <p className="text-[10px] text-gray-400 font-bold uppercase tracking-widest mb-0.5">Schedule</p>
-                                        <p className="text-sm font-extrabold text-gray-900">{formData.date} at {formData.time}</p>
+                                        <p className="text-[9px] text-gray-400 font-bold uppercase tracking-widest mb-0.5">Schedule</p>
+                                        <p className="text-xs font-extrabold text-gray-900">{formData.date} <span className="text-gray-400 font-normal mx-0.5">at</span> {formData.time}</p>
                                     </div>
                                 </div>
-                                <ChevronRight size={16} className="text-gray-300 group-hover:text-(--primary) transition-colors" />
+                                <div className="text-xs font-bold text-(--primary) bg-blue-50 px-2 py-1 rounded-md opacity-0 group-hover:opacity-100 transition-opacity">Edit</div>
                             </div>
 
-                            <div className="h-px bg-gray-50 mx-4"></div>
-
-                            <div className="flex items-center justify-between p-3 hover:bg-gray-50 rounded-xl cursor-pointer transition-colors group" onClick={() => setStep(3)}>
-                                <div className="flex items-center gap-4">
-                                    <div className="bg-blue-50 text-(--primary) p-2.5 rounded-xl group-hover:scale-110 transition-transform">
-                                        <MapPin size={18} />
+                            {/* Address */}
+                            <div className="flex items-center justify-between p-4 hover:bg-gray-50/80 active:bg-gray-100 cursor-pointer transition-colors group" onClick={() => setStep(3)}>
+                                <div className="flex items-center gap-3.5 min-w-0 pr-2">
+                                    <div className="w-9 h-9 rounded-xl bg-blue-50 flex items-center justify-center text-(--primary) border border-blue-100/50 group-hover:scale-105 transition-transform shrink-0">
+                                        <MapPin size={16} />
                                     </div>
-                                    <div>
-                                        <p className="text-[10px] text-gray-400 font-bold uppercase tracking-widest mb-0.5">Delivery Address</p>
-                                        <p className="text-sm font-extrabold text-gray-900 truncate max-w-[180px] sm:max-w-xs">{formData.address}, {formData.city}</p>
+                                    <div className="min-w-0">
+                                        <p className="text-[9px] text-gray-400 font-bold uppercase tracking-widest mb-0.5">Service Address</p>
+                                        <p className="text-xs font-extrabold text-gray-900 truncate">{formData.address}</p>
+                                        <p className="text-[10px] text-gray-500 truncate mt-0.5">{formData.city}</p>
                                     </div>
                                 </div>
-                                <ChevronRight size={16} className="text-gray-300 group-hover:text-(--primary) transition-colors" />
+                                <div className="text-xs font-bold text-(--primary) bg-blue-50 px-2 py-1 rounded-md opacity-0 group-hover:opacity-100 transition-opacity shrink-0">Edit</div>
                             </div>
                         </div>
+
                     </div>
                 )}
             </div>
@@ -492,7 +530,7 @@ export default function BookingWizard({ services: categories, addresses = [], on
                             })()}
                         </div>
 
-                        <div className="p-4 pb-10 bg-white border-t border-gray-100 sticky bottom-0 z-10 shadow-[0_-10px_20px_-10px_rgba(0,0,0,0.1)]">
+                        <div className="p-4 pb-20 md:pb-4 bg-white border-t border-gray-100 sticky bottom-0 z-10 shadow-[0_-10px_20px_-10px_rgba(0,0,0,0.1)]">
                             <Button className="w-full py-3 shadow-md font-bold text-base bg-(--primary) hover:bg-blue-700" onClick={() => setActiveCategory(null)}>
                                 OK
                             </Button>

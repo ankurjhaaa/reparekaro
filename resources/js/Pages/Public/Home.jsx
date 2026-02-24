@@ -125,7 +125,7 @@ export default function Home() {
                         <div className="absolute top-0 right-0 w-3/4 h-3/4 bg-blue-100 rounded-[3rem] -z-10 transform rotate-3"></div>
                         <div className="absolute bottom-10 left-10 w-2/3 h-2/3 bg-purple-100 rounded-[3rem] -z-10 transform -rotate-2"></div>
                         <img
-                            src="https://images.unsplash.com/photo-1581578731117-1045293d2f2d?auto=format&fit=crop&q=80&w=1000"
+                            src="https://thumbs.dreamstime.com/b/technician-male-worker-working-garage-scrap-yard-old-car-part-workshop-warehouse-women-customer-finding-spare-413769004.jpg?w=360%20360w,%20https://thumbs.dreamstime.com/b/technician-male-worker-working-garage-scrap-yard-old-car-part-workshop-warehouse-women-customer-finding-spare-413769004.jpg?w=400%20400w,%20https://thumbs.dreamstime.com/b/technician-male-worker-working-garage-scrap-yard-old-car-part-workshop-warehouse-women-customer-finding-spare-413769004.jpg?w=450%20450w,%20https://thumbs.dreamstime.com/b/technician-male-worker-working-garage-scrap-yard-old-car-part-workshop-warehouse-women-customer-finding-spare-413769004.jpg?w=576%20576w,%20https://thumbs.dreamstime.com/b/technician-male-worker-working-garage-scrap-yard-old-car-part-workshop-warehouse-women-customer-finding-spare-413769004.jpg?w=768%20768w,%20https://thumbs.dreamstime.com/b/technician-male-worker-working-garage-scrap-yard-old-car-part-workshop-warehouse-women-customer-finding-spare-413769004.jpg?w=992%20992w"
                             alt="Technician working"
                             className="relative rounded-2xl shadow-2xl object-cover w-full h-full transform transition-transform hover:scale-[1.01]"
                         />
@@ -155,11 +155,11 @@ export default function Home() {
                         </Link>
                     </div>
 
-                    <div className="grid grid-cols-3 md:grid-cols-3 lg:grid-cols-6 gap-3 md:gap-6">
+                    <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-3 md:gap-6">
                         {services.map((service, idx) => (
                             <Link key={idx} href="/book-now" className="group block">
-                                <div className="bg-white rounded-xl md:rounded-2xl p-3 md:p-6 text-center shadow-sm hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1 h-full flex flex-col items-center justify-center border border-transparent hover:border-blue-100 relative overflow-hidden aspect-square md:aspect-auto">
-                                    <div className="w-10 h-10 md:w-14 md:h-14 rounded-full md:rounded-2xl mb-2 md:mb-4 group-hover:bg-gray-50 transition-colors duration-300 overflow-hidden relative">
+                                <div className="bg-white rounded-lg md:rounded-2xl p-3 md:p-6 text-center shadow-sm hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1 h-full flex flex-col items-center justify-center border border-transparent hover:border-blue-100 relative overflow-hidden aspect-square md:aspect-auto">
+                                    <div className="w-16 h-16 md:w-14 md:h-14 rounded-2xl md:rounded-2xl mb-2 md:mb-4 group-hover:bg-gray-50 transition-colors duration-300 overflow-hidden relative">
                                         {service.image_url ? (
                                             <img src={service.image_url} alt={service.name} className="w-full h-full object-cover" />
                                         ) : (
@@ -169,7 +169,7 @@ export default function Home() {
                                             </div>
                                         )}
                                     </div>
-                                    <h3 className="font-semibold text-gray-900 text-xs md:text-base mb-0 md:mb-1 leading-tight">{service.name}</h3>
+                                    <h3 className="font-semibold text-gray-900 text-sm md:text-base mb-0 md:mb-1 leading-tight">{service.name}</h3>
                                 </div>
                             </Link>
                         ))}
@@ -186,7 +186,7 @@ export default function Home() {
                             <div className="relative">
                                 <div className="grid grid-cols-2 gap-4">
                                     <img src="https://images.unsplash.com/photo-1621905251918-48416bd8575a?auto=format&fit=crop&q=80&w=500" className="rounded-2xl shadow-lg mt-12" alt="Feature 1" />
-                                    <img src="https://images.unsplash.com/photo-1505798577917-a651a5d40320?auto=format&fit=crop&q=80&w=500" className="rounded-2xl shadow-lg" alt="Feature 2" />
+                                    <img src="https://thumbs.dreamstime.com/b/technician-male-worker-working-garage-scrap-yard-old-car-part-workshop-warehouse-women-customer-finding-spare-413769004.jpg?w=360%20360w,%20https://thumbs.dreamstime.com/b/technician-male-worker-working-garage-scrap-yard-old-car-part-workshop-warehouse-women-customer-finding-spare-413769004.jpg?w=400%20400w,%20https://thumbs.dreamstime.com/b/technician-male-worker-working-garage-scrap-yard-old-car-part-workshop-warehouse-women-customer-finding-spare-413769004.jpg?w=450%20450w,%20https://thumbs.dreamstime.com/b/technician-male-worker-working-garage-scrap-yard-old-car-part-workshop-warehouse-women-customer-finding-spare-413769004.jpg?w=576%20576w,%20https://thumbs.dreamstime.com/b/technician-male-worker-working-garage-scrap-yard-old-car-part-workshop-warehouse-women-customer-finding-spare-413769004.jpg?w=768%20768w,%20https://thumbs.dreamstime.com/b/technician-male-worker-working-garage-scrap-yard-old-car-part-workshop-warehouse-women-customer-finding-spare-413769004.jpg?w=992%20992w" className="rounded-2xl shadow-lg" alt="Feature 2" />
                                 </div>
                             </div>
                             <div>

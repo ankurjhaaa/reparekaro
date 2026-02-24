@@ -32,24 +32,38 @@ export default function BookNow() {
                         <BookingWizard services={services} addresses={userAddresses} onSubmit={handleBookingSubmit} />
                     </div>
                 ) : (
-                    <div className="text-center bg-white p-12 rounded-3xl shadow-[0_8px_30px_rgb(0,0,0,0.08)] border border-gray-100 max-w-lg w-full animate-fade-in-up relative overflow-hidden">
-                        <div className="absolute top-0 left-0 w-full h-2 bg-gradient-to-r from-green-400 to-emerald-500"></div>
-                        <div className="mx-auto flex items-center justify-center h-28 w-28 rounded-full bg-green-50 mb-8 inset-0 shadow-inner">
-                            <div className="flex items-center justify-center h-20 w-20 rounded-full bg-green-500 text-white shadow-[0_0_20px_rgba(34,197,94,0.4)] animate-bounce-short">
-                                <Check className="h-10 w-10" strokeWidth={3} />
+                    <div className="bg-white p-6 sm:p-10 rounded-3xl shadow-[0_8px_30px_rgb(0,0,0,0.03)] border border-gray-100 max-w-sm sm:max-w-md w-full animate-fade-in-up relative overflow-hidden flex flex-col items-center text-center">
+                        {/* Soft Gradient Background Orbs */}
+                        <div className="absolute top-0 right-0 w-48 h-48 bg-blue-500/5 rounded-full blur-3xl -mr-16 -mt-16 pointer-events-none"></div>
+                        <div className="absolute bottom-0 left-0 w-32 h-32 bg-(--primary)/5 rounded-full blur-2xl -ml-10 -mb-10 pointer-events-none"></div>
+
+                        {/* Animated Icon */}
+                        <div className="relative z-10 w-24 h-24 mb-6 mt-4">
+                            <div className="absolute inset-0 bg-blue-50/80 rounded-full animate-pulse"></div>
+                            <div className="absolute inset-2 bg-blue-100/50 rounded-full"></div>
+                            <div className="absolute inset-4 bg-(--primary) text-white rounded-full flex items-center justify-center shadow-lg shadow-blue-500/30">
+                                <Check className="h-8 w-8" strokeWidth={3} />
                             </div>
                         </div>
-                        <h2 className="text-3xl font-extrabold text-gray-900 mb-3 tracking-tight">Booking Confirmed!</h2>
-                        <p className="text-base text-gray-500 mb-8 leading-relaxed">
-                            Your service request has been successfully placed. We'll send you an update shortly.
-                            <br />
-                            <span className="font-bold text-gray-900 mt-4 block p-3 bg-gray-50 rounded-xl border border-gray-100">Booking ID: <span className="text-(--primary)">#RK-{Math.floor(100000 + Math.random() * 900000)}</span></span>
+
+                        {/* Heading & Text */}
+                        <h2 className="text-2xl sm:text-3xl font-black text-gray-900 mb-2 tracking-tight relative z-10">Booking Confirmed</h2>
+                        <p className="text-[13px] sm:text-sm text-gray-500 mb-8 leading-relaxed max-w-xs relative z-10">
+                            Your service request has been successfully placed. We'll assign a professional shortly.
                         </p>
-                        <div className="space-y-4">
-                            <Button onClick={() => setBookingComplete(false)} className="w-full justify-center py-4 rounded-xl text-md font-bold shadow-md hover:shadow-lg transition-all">
+
+                        {/* Booking Details Card */}
+                        <div className="w-full bg-gray-50/80 px-4 py-3.5 rounded-2xl border border-gray-100 mb-8 relative z-10 flex items-center justify-between">
+                            <span className="text-[10px] sm:text-xs font-bold text-gray-400 uppercase tracking-widest leading-none">Booking ID</span>
+                            <span className="font-black text-gray-900 tracking-wide text-base sm:text-lg leading-none text-(--primary)">#RK-{Math.floor(100000 + Math.random() * 900000)}</span>
+                        </div>
+
+                        {/* Action Buttons */}
+                        <div className="w-full space-y-3 relative z-10">
+                            <Button onClick={() => setBookingComplete(false)} className="w-full justify-center py-3.5 sm:py-4 rounded-xl text-sm font-bold tracking-wide transition-all shadow-md shadow-blue-500/20 active:scale-[0.98]">
                                 Book Another Service
                             </Button>
-                            <a href="/" className="block text-gray-500 hover:text-(--primary) font-semibold transition-colors mt-2">
+                            <a href="/" className="w-full flex items-center justify-center py-3.5 sm:py-4 rounded-xl text-sm font-bold text-gray-600 bg-white border border-gray-200 hover:bg-gray-50 hover:text-gray-900 transition-colors active:scale-[0.98]">
                                 Return to Home
                             </a>
                         </div>
