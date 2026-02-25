@@ -48,8 +48,13 @@ class AuthController extends Controller
 
         if (Auth::attempt($credentials, $request->boolean('remember'))) {
             $request->session()->regenerate();
-
-            return redirect()->intended('/');
+            if (Auth::user()->role === 'user') {
+                return redirect()->intended('/');
+            } else if (Auth::user()->role === 'vendor') {
+                return redirect()->intended('/vendor/dashboard');
+            } else if (Auth::user()->role === 'technician') {
+                return redirect()->intended('/technician/dashboard');
+            }
         }
 
         return back()->withErrors([
